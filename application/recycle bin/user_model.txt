@@ -1,0 +1,8 @@
+ //Store session variables upon successful login
+//            $_SESSION['user_id'] = $row->user_id;
+//            $_SESSION['email'] = $row->email;
+//            $_SESSION['first_name'] = $row->first_name;
+//            $_SESSION['last_name'] = $row->last_name;
+//            $_SESSION['gender'] = $row->gender;
+//            $_SESSION['user_type'] = $row->user_type; 
+            

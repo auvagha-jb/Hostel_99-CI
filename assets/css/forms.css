@@ -1,0 +1,115 @@
+body.sign-in{
+    background-image: url('../img/students-reading.jpeg');
+    background-size: cover;
+}
+
+form.sign-in{
+    position: absolute;
+    margin: auto;
+    margin-top: 2%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: solid #000;
+    border-radius: 5px;
+    border-width: thin;
+    border-color: darkgrey;
+    padding: 4%;
+    padding-bottom: 6%;
+    background: darkgray;
+    opacity: 0.85;    
+}
+
+form.sign-in label, .form-text{
+/*    color: white;*/
+}
+
+form.sign-in input{
+    width: 300px;
+}
+
+
+form.sign-up, form.update{
+    border-color: #000000;
+    position: absolute;
+    width: 90%;
+    height: 98%;
+/*    top: 30%;*/
+    left: 10%;
+    background: white;
+    color: black;
+    padding: 10% 10%;
+}
+
+.sign-up-img{
+  height: 1000px;
+}
+
+button#s-u-submit{
+    
+}
+
+button#s-u-submit:hover{
+    
+}
+
+
+/*Form display on sm to xs screens*/
+@media (max-width: 768px) {
+    
+    .sign-up-img{
+        display: none;
+    }
+    
+    div.top-left{
+        display: none;
+    }
+    
+    form.sign-up, form.update{
+/*        background: gray;*/
+        height: 1100px;
+        width: 98%;
+        margin: 0;
+        left: 0;
+    }
+
+}/*end of 768ppx settings*/
+
+
+.form-small-text{
+}
+
+
+/*Image text*/
+.centered{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+/*    transform: translate(-50%, -50%);*/
+}   
+
+.top-left{
+    position: absolute;
+    top: 10%;
+    left: 10%;
+}
+
+.top-left p{
+    color: #fff;
+}
+
+
+.img-text{
+    color: gray;
+}
+
+
+.hostel_location{
+    margin-bottom: 5px;
+    font-size: 15px;
+    float: right;
+}
+
+.card-btn{
+    width: 135px;
+}

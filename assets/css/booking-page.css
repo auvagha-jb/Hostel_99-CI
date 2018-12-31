@@ -1,0 +1,174 @@
+ /**hostel title**/
+        .hostel-title h4 {
+            margin-top: 40px;
+            text-align: center;
+            font-family: "Helvetica Neue";
+            font-size: 25px;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: #F4A460;
+        }
+
+        /*********Booking Page Carousel********/
+        #slides {
+            width: 90%;
+            height: 200px;
+            margin: auto;
+        }
+
+        #slides .carousel-indicators {
+            top: 700px;
+        }
+        
+        #slides .carousel-indicators .active{
+            
+        }
+
+        #slides .carousel-item img {
+            height: 750px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+
+        #slides .carousel-control-prev, #slides .carousel-control-next {
+            top: 375px;
+        }
+
+        .carousel-control-prev-icon, .carousel-control-next-icon{
+            background-color: darkgray;
+        }
+        /**hostel description**/
+        .hostel-description {
+            margin-top: 650px;
+            margin-left: 150px;
+        }
+
+        .hostel-description #about h4 {
+            font-size: 18px;
+            font-family: "Helvetica Neue";
+        }
+
+        .hostel-description p {
+            margin-left: 20px;
+            font-family: "Helvetica Neue";
+            font-size: 16px;
+        }
+
+        /**hr**/
+        hr {
+            margin-left: 0px;
+            height: 5px;
+            color: black;
+            width: 90%;
+        }
+
+        .hostel-data li {
+            list-style: none;
+            font-family: "Helvetica Neue";
+            font-size: 16px;
+            line-height: 30px;
+            margin-left: 20px;
+            display: block;
+        }
+
+        .hostel-amenities, .hostel-rules, .hostel-pricing 
+        {
+            margin-left: 150px;
+        }
+
+
+        .pricing-list li {
+            margin-left: 25px;
+            display: list-item;
+            text-align: -webkit-match-parent;
+            list-style-type: none;
+            font-size: 16px;
+            font-family: "Helvetica Neue";
+        }
+
+        .pricing-item:hover{
+            background: #ddd;
+        }
+        
+        .book-panel-bar hr {
+            margin-left: 100px;
+            width: 60%;
+        }
+
+        .book-panel {
+            border: 1px solid #dce0e0;
+            padding: 20px;
+            margin-top: 0px;
+            font-family: "Helvetica Neue";
+            font-size: 14px;
+            color: #333333;
+            background-color: #F4A460 ;
+            width: 40%;
+            margin-left: 300px;
+        }
+
+        .book-panel .col-sm-3 {
+            float: left;
+            position: relative;
+            min-height: 1px;
+            display: block;
+        }
+
+        .book-panel button {
+            margin-left: 200px;
+            border-radius: 20px;
+        }
+        
+        
+        .checkout_h {
+            color: black;
+            font-family: Helvetica;
+        }
+
+        .checkout tr {
+            color: black;
+            font-size: 20px;
+            font-family: Arial;
+        }
+
+        .checkout_container{
+            padding: 50px;
+/*            background-image:url("../img/fruit2.jpg");*/
+            min-width: 100%;
+            height:900px;
+
+            .topnav a:hover:before {
+                visibility: visible;
+                -webkit-transform:scaleX(1);
+                transform: scaleX(1);
+            }
+        }
+
+        .checkout_tbl {
+            width: 65%;
+            float: left;
+            color:black;
+        }
+
+        .footBtn {
+            width: 95%;
+            float: left;
+        }
+
+        .orderBtn {
+            float: right;
+        }
+        
+        
+        ul{
+            list-style: none;
+            padding-left: 0px;
+        }
+
+        ul li span{
+            float:left;width: 400px; margin-right:150px;
+        }
+        
+        ul li a{
+            margin-bottom:5px;
+        }

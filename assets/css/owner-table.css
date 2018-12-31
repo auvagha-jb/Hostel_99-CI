@@ -1,0 +1,13 @@
+#sticky-sidebar{
+    padding: 0px;
+}
+
+
+#nav-contents a:active{
+    color:white;
+}
+
+.active_{
+    background: whitesmoke;
+    color: black;
+}

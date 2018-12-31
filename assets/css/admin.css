@@ -1,0 +1,20 @@
+html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+
+nav {
+    margin-top: 5px;
+    font-size: 20px;
+    margin-right: 30px;
+    padding-left: 30px;
+}
+
+.links{
+    text-decoration: none;
+}
+
+.right{
+    float: right;
+}
+
+#logout-btn:hover{
+    background: #d64161;
+}
