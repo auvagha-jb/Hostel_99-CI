@@ -65,12 +65,13 @@ class User_Model extends CI_Model{
               /*
                * Ensures the user had not been blocked and they are redirected to the right page
                */
-              $this->checkBlocked($data, $user_data);
+              $this->redirect_new($data, $user_data);
             }
         }
 
     }
 
+    //To check whether the email address entered exists - To avoid duplicate email addresses
     function availableEmail(){
         //Check whether the email exists
         if(isset($_POST['email'])){
@@ -90,6 +91,47 @@ class User_Model extends CI_Model{
         } 
     }
     
+    //Function to redirect new user on sign in
+    function redirect_new(&$data, &$user_data){
+        $user_type = $data['user_type'];
+        $blocked = $data['blocked'];
+                
+        if($blocked == 0){
+            
+            //Redirect back to the page they were on
+            if(isset($_SESSION['current_url'])){
+                $current_url = $_SESSION['current_url'];
+                $module = $_SESSION['module'];
+                
+                //Set the session variables
+                $this->session->set_userdata($user_data);
+                
+                //Ensures one is not redirected to a module above their access level
+                $clear = $this->rightType($module, $user_type);
+                if($clear){
+                    echo $current_url;
+                    exit();
+                }else{
+                    $this->redirect_user($user_type);
+                }
+                $this->session->unset_userdata('current_url','module');
+            }
+
+            //Set the session variables
+            $this->session->set_userdata($user_data);
+            
+            //Redirect to index pages of the different user types
+            if(isset($_SESSION['user_id'])){
+                   $this->redirect_user($user_type);
+            }   
+            
+          }else{
+              echo 'Account blocked';
+              exit();
+          }  
+    }
+    
+    /***********End: Sign up form action*************/
     
     /****Sign in form action****/
     public function signIn(){
@@ -163,7 +205,7 @@ class User_Model extends CI_Model{
                 //Ensures one is not redirected to a module above their access level
                 $clear = $this->rightType($module, $user_type);
                 if($clear){
-                    redirect($current_url);
+                    echo $current_url;
                     exit();
                 }else{
                     $this->redirect_user($user_type);
@@ -176,7 +218,6 @@ class User_Model extends CI_Model{
             
             //Redirect to index pages of the different user types
             if(isset($_SESSION['user_id'])){
-                   echo 'login-success';
                    $this->redirect_user($user_type);
             }   
             
@@ -201,13 +242,13 @@ class User_Model extends CI_Model{
     function redirect_user($user_type){
         switch ($user_type){
              case "Student":
-                 redirect('Main/');
+                 echo 'Main/';
                  break;
              case "Hostel Owner":
-                 redirect('Owner/');
+                 echo 'Owner/';
                  break;
              case "Admin":
-                 redirect('Admin/');
+                 echo 'Admin/';
                  break;
          }
     }

@@ -18,3 +18,7 @@ nav {
 #logout-btn:hover{
     background: #d64161;
 }
+
+.hide{
+    display: none;
+}

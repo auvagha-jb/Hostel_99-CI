@@ -30,7 +30,7 @@ class Admin extends CI_Controller{
         $data['users'] = $this->admin_model->getUsers();
         
         $this->load->view('templates/admin/admin-header',$data);
-        $this->load->view('admin/admin-users');
+        $this->load->view('admin/admin-users-test');
         $this->load->view('templates/admin/admin-footer');
     }
     
@@ -43,6 +43,22 @@ class Admin extends CI_Controller{
         $this->load->view('templates/admin/admin-header',$data);
         $this->load->view('admin/admin-hostels');
         $this->load->view('templates/admin/admin-footer');
+    }
+    
+    
+    /**********Start: Javascript helpers**********/
+   
+    //Show the users table 
+    function show_users(){
+        $this->admin_model->showUsers();
+    }
+    
+    function show_suspended_users(){
+        $this->admin_model->showSuspendedUsers();
+    }
+    
+    function delete_user(){
+        
     }
     
     function user_delete($id, $name, $user_status = ""){
@@ -61,8 +77,8 @@ class Admin extends CI_Controller{
         }elseif($tenant){
             alert($name." is a tenant, therefore needs to remain in the system");
         }
-        //redirect('admin/users');
+//        redirect('admin/users');
     }
     
-    
+    /**********End: Javascript helpers**********/
 }

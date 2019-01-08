@@ -8,6 +8,7 @@ class Owner_Model extends CI_Model {
         parent::__construct();
         $this->load->library('upload');
         $this->load->model('actions/booking_model', 'booking_model');
+        $this->load->model('actions/remove_tenant', 'remove');
     }
 
     /*     * **Action: Add hostel*** */
@@ -23,7 +24,7 @@ class Owner_Model extends CI_Model {
         }
     }
 
-    function add_hostel_action(){
+    function add_hostel_action() {
         //Get form data 
         $details = array(
             'hostel_no' => $this->gen_hostel_no(), //Generate a hostel_no randomly 
@@ -35,40 +36,40 @@ class Owner_Model extends CI_Model {
             'type' => $this->input->post('hostel_type'),
             'image' => $_FILES['image']['name']
         );
-        
-        /**Dynamic input arrays**/
+
+        /*         * Dynamic input arrays* */
         $sharing_array = $this->input->post('no_sharing');
         $rent_array = $this->input->post('monthly_rent');
         $limit_array = $this->input->post('room_limit');
-        
+
         $amenities = $this->input->post('amenities');
         $rules = $this->input->post('rules');
-   
-        /*****************/
-        
-        /*Begin transcation: Ensures changes are rolled back if any query fails*/
+
+        /*         * ************** */
+
+        /* Begin transcation: Ensures changes are rolled back if any query fails */
         $this->db->trans_start();
 
-        /*The core hostel details*/
+        /* The core hostel details */
         $this->add_hostel_details($details);
-        
+
         $this->add_room_details($sharing_array, $rent_array, $limit_array);
         $this->add_amenities($amenities);
         $this->add_rules($rules);
         $this->update_user_hostel_bridge();
-        
-        /*End the transcation*/
+
+        /* End the transcation */
         $this->db->trans_complete();
-        
+
         //Given the transcation is successful...
-        if($this->db->trans_status()){
-            redirect('owner/dashboard?id='.$details['hostel_no'].'&type='.$details['type'].
-                    '&hostel_name='.$details['hostel_name']);
+        if ($this->db->trans_status()) {
+            redirect('owner/dashboard?id=' . $details['hostel_no'] . '&type=' . $details['type'] .
+                    '&hostel_name=' . $details['hostel_name']);
         }
     }
-            
+
     function add_hostel_details(&$details) {
-        
+
         //Set session variables
         $_SESSION['hostel_no'] = $details['hostel_no'];
         $_SESSION['hostel_name'] = $details['hostel_name'];
@@ -80,71 +81,69 @@ class Owner_Model extends CI_Model {
         $this->db->insert('hostels', $details);
     }
 
-  
-    function add_room_details(&$sharing_array, &$rent_array, &$limit_array){
+    function add_room_details(&$sharing_array, &$rent_array, &$limit_array) {
         //Find the number of items to insert
         $array_size = count($sharing_array);
-        $hostel_capacity = 0;//To record the total number of people the hostel can hold
+        $hostel_capacity = 0; //To record the total number of people the hostel can hold
         $hostel_no = $_SESSION['hostel_no'];
-        
-        for($count = 0; $count<$array_size; $count++){
+
+        for ($count = 0; $count < $array_size; $count++) {
             //Get the form data
-            $no_sharing = $sharing_array[$count]; 
+            $no_sharing = $sharing_array[$count];
             $monthly_rent = $rent_array[$count];
             $room_limit = $limit_array[$count];
-         
+
             //Tally the hostel capacity
             $current_capacity = 0;
             $room_capacity = $no_sharing * $room_limit;
             $hostel_capacity = $hostel_capacity + $room_capacity; //This will get the grand total of available slots
-            
             //Data to be inserted
             $data = array(
-                'hostel_no' =>$hostel_no, 
-                'no_sharing'=>$no_sharing, 
-                'monthly_rent'=>$monthly_rent, 
-                'room_limit'=>$room_limit, 
-                'current_capacity'=>$current_capacity, 
-                'total_capacity'=>$room_capacity
-             );
-            
-             $this->db->insert('rooms',$data);
+                'hostel_no' => $hostel_no,
+                'no_sharing' => $no_sharing,
+                'monthly_rent' => $monthly_rent,
+                'room_limit' => $room_limit,
+                'current_capacity' => $current_capacity,
+                'total_capacity' => $room_capacity
+            );
+
+            $this->db->insert('rooms', $data);
         }
-        
-        $this->setCapacity($hostel_no ,$hostel_capacity);
+
+        $this->setCapacity($hostel_no, $hostel_capacity);
     }
-  
-    function add_amenities($amenities){
+
+    function add_amenities($amenities) {
         //Find the number of items to insert
-        $array_size= count($amenities);       
+        $array_size = count($amenities);
         $hostel_no = $_SESSION['hostel_no'];
-        
-        for($count = 0; $count<$array_size; $count++){
+
+        for ($count = 0; $count < $array_size; $count++) {
             //"INSERT INTO `amenities`(`hostel_no`, `amenity`) VALUES (?,?)";
             $insert_data = array(
-                'hostel_no'=>$hostel_no,
-                'amenity'=>$amenities[$count]
+                'hostel_no' => $hostel_no,
+                'amenity' => $amenities[$count]
             );
             $this->db->insert('amenities', $insert_data);
         }
     }
-    
-    function add_rules($rules){
+
+    function add_rules($rules) {
         //Find the number of items to insert
-        $array_size= count($rules);       
+        $array_size = count($rules);
         $hostel_no = $_SESSION['hostel_no'];
-        
-        for($count = 0; $count<$array_size; $count++){
+
+        for ($count = 0; $count < $array_size; $count++) {
             //"INSERT INTO `rules`(`hostel_no`, `rule`) VALUES (?,?)";
             $insert_data = array(
-                'hostel_no'=>$hostel_no,
-                'rule'=>$rules[$count]
+                'hostel_no' => $hostel_no,
+                'rule' => $rules[$count]
             );
             $this->db->insert('rules', $insert_data);
         }
     }
-    
-    function update_user_hostel_bridge(){
+
+    function update_user_hostel_bridge() {
         //Update the junction table: user_hostel_bridge
         $user_id = $_SESSION['user_id'];
         $hostel_no = $_SESSION['hostel_no'];
@@ -153,14 +152,15 @@ class Owner_Model extends CI_Model {
 
         //INSERT INTO `user_hostel_bridge`(`user_id`, `hostel_no`) VALUES(?,?)
         $insert_data = array(
-            'user_id'=>$user_id, 
-            'hostel_no'=>$hostel_no
+            'user_id' => $user_id,
+            'hostel_no' => $hostel_no
         );
-        $this->db->insert('user_hostel_bridge',$insert_data);
+        $this->db->insert('user_hostel_bridge', $insert_data);
     }
-    
-    /***Add Hostel helpers **/
-     function gen_hostel_no() {
+
+    /*     * *Add Hostel helpers * */
+
+    function gen_hostel_no() {
         $hostel_no = mt_rand();
 
         do {
@@ -170,26 +170,27 @@ class Owner_Model extends CI_Model {
 
         return $hostel_no;
     }
-    
-    function setCapacity($hostel_no ,$hostel_capacity){
+
+    function setCapacity($hostel_no, $hostel_capacity) {
         //UPDATE hostels SET total_available = ?, total_occupied = ?, vacancies = ? WHERE hostel_no = ?
-        
+
         $total_occupied = 0;
         $vacancies = $hostel_capacity - $total_occupied;
-        
+
         $update_data = array(
-            'total_available'=>$hostel_capacity,
-            'total_occupied'=>$total_occupied,
-            'vacancies'=>$vacancies
-         );
-        
-        $this->db->where('hostel_no',$hostel_no);
-        $this->db->update('hostels',$update_data);
+            'total_available' => $hostel_capacity,
+            'total_occupied' => $total_occupied,
+            'vacancies' => $vacancies
+        );
+
+        $this->db->where('hostel_no', $hostel_no);
+        $this->db->update('hostels', $update_data);
     }
-    /***End: Add Hostel helpers **/
-    
-    
-    /********End: Add hostel*********/
+
+    /*     * *End: Add Hostel helpers * */
+
+
+    /*     * ******End: Add hostel******** */
 
     /** Action: View hostels * */
     function view_hostels($user_id) {
@@ -379,15 +380,17 @@ class Owner_Model extends CI_Model {
         $sql = 'SELECT * FROM `room_allocation` WHERE wing = ? AND no_sharing = ? AND hostel_no = ? AND spaces > 0';
         $param = array($wing, $no_sharing, $hostel_no);
         $query = $this->db->query($sql, $param);
+        $results = $query->num_rows();
 
-        foreach ($query->result_array() as $row) {
-            $no_occupied = $row['no_occupied'];
-            $spaces = $row['spaces'];
-            $room_no = $row['room_no'];
-            $colour = $this->getColour($wing, $no_occupied);
-            $status = $this->roomStatus($no_occupied, $spaces);
+        if ($results > 0) {
+            foreach ($query->result_array() as $row) {
+                $no_occupied = $row['no_occupied'];
+                $spaces = $row['spaces'];
+                $room_no = $row['room_no'];
+                $colour = $this->getColour($wing, $no_occupied);
+                $status = $this->roomStatus($no_occupied, $spaces);
 
-            $output.='
+                $output.='
                 <div data-dismiss="modal">
                     <div class="card text-white mx-3 my-3 bg-' . $colour['bg'] . '" id="' . $room_no . '">
                       <div class="card-header">Room ' . $room_no . '</div>
@@ -397,8 +400,17 @@ class Owner_Model extends CI_Model {
                     </div>
                 </div>
                 ';
+            }
+        } else {
+            $output.= '<center class="lead">No rooms available for ' . $no_sharing . ' sharing</center>';
         }
+
         echo json_encode($output);
+    }
+
+    function noRooms($no) {
+        $data = '<center class="lead">No rooms available for ' . $no . ' sharing</center>';
+        return $data;
     }
 
     function getColour($wing, $no_occupied) {
@@ -497,13 +509,17 @@ class Owner_Model extends CI_Model {
 
     /*     * ******End: Image handling******** */
 
+
+    /*     * ***Action: Add tenant****** */
+
+    //Ensure the user meets the criteria to be added as a tenant
     function verifyUser($data) {
         /*         * *****Post data****** */
         $hostel_no = $data['hostel_no'];
         $no_sharing = $data['no_sharing'];
         $email = $data['email'];
         $room_assigned = $data['room_assigned'];
-        /*         * *****End: Post data****** */
+        /*         * ****End: Post data****** */
 
         /*         * ****Database arrays***** */
         $user_where = array('email' => $email);
@@ -517,23 +533,23 @@ class Owner_Model extends CI_Model {
         /*         * ****End: Database arrays***** */
 
         /*         * *If the user is found ...** */
-        if (isset($user)) {
+        if (!empty($user)) {
             $user_id = $user['user_id'];
 
             //Data about the hostel they are staying in
-            $hostel_where = array('user_id');
+            $hostel_where = array('hostel_no' => $hostel_no);
             $hostel = $this->table_model->getArray('hostels', $hostel_where);
-            $isTenant = $this->isTenant($user_id);
+            //$isTenant = $this->isTenant($user['user_status']);
 
-            if (isset($isTenant)) {
-                $this->userEldgible();
-            }
 
             /*
-             * Check status and user_hostel_bridge table to ensure they are not already a tenant in the current  
-             * nor in another hostel and that they are of "student" type 
+             * Check status to ensure they are not already a tenant in the current  
+             * nor in another hostel and that they are of "student" type
+             * 
+             * @param $user{array} -->user details
+             * @param $hostel{array} -->hostel details
              */
-
+            $this->userElidgible($user, $hostel);
 
 
             /*
@@ -548,7 +564,7 @@ class Owner_Model extends CI_Model {
             }
 
             /*             * Testing transactions* */
-            $this->db->trans_start(TRUE);
+            $this->db->trans_start();
 
             if ($booked) {
                 /* Change status from booked to tenant */
@@ -567,7 +583,7 @@ class Owner_Model extends CI_Model {
                     //Allocate rooms
                     $this->booking_model->updateRooms($this_room, $hostel, $data, $action);
 
-                    echo 'Cleared for insert'; //Cleared for insert into database
+                    echo ''; //Cleared for insert into database
                 }
             }
         } else {
@@ -578,23 +594,15 @@ class Owner_Model extends CI_Model {
         $this->db->trans_complete();
     }
 
-    function isTenant($user_id, $hostel_no) {
-        $sql = 'SELECT * FROM user_hostel_bridge JOIN hostels ON user_hostel_bridge.hostel_no = hostels.hostel_no '
-                . 'WHERE user_hostel_bridge.user_id = ?';
-        $query = $this->db->query($sql, $user_id);
-
-        return $query->row_array();
-    }
-
     function userElidgible(&$user, &$hostel) {
         $name = $user['first_name'] . " " . $user['last_name'];
         $user_status = $user['user_status'];
         $user_type = $user['user_type'];
         $gender = $user['gender'];
 
-        $hostel_no = $this->session;
+        $hostel_no = $this->session->hostel_no;
         $hostel_name = $hostel['hostel_name'];
-        $hostel_reg = $hostel['hostel_reg'];
+        $hostel_reg = $hostel['hostel_no'];
         $type = $hostel['type'];
 
         /*
@@ -619,6 +627,187 @@ class Owner_Model extends CI_Model {
             echo $name . " is " . $gender . ". If you admit both genders change hostel type to mixed";
             exit();
         }
+    }
+
+    //Addition of the tenant into the hostel records
+    function addTenant(&$data) {
+        //Form data
+        $email = $data['email'];
+        $room_assigned = $data['room_assigned'];
+        $no_sharing = $data['no_sharing'];
+
+        //Get the user data from the db
+        $get = $this->table_model->getArray('users', array('email' => $email));
+        $user_id = $get['user_id'];
+        $name = $get['first_name'] . " " . $get['last_name'];
+
+        //Begin transaction 
+        $this->db->trans_start();
+
+        //Change user_status from NULL to Tenant
+        $this->changeStatus($email, $room_assigned, $no_sharing);
+
+        //Insert data into respective tables: tenants_history and 
+        $this->insertQueries($user_id, $hostel_no);
+
+        $this->db->trans_complete();
+
+        //Commit the queries if there were no errors encountered
+        $status = $this->db->trans_status();
+        if ($status == 1) {
+            echo $name . ' has been added';
+        }
+    }
+
+    function insertQueries($user_id, $hostel_no) {
+        /*
+         * TENANT_HISTORY 
+         */
+        date_default_timezone_set('Africa/Nairobi');
+        $date_checked_in = date('Y-m-d H:i:s');
+
+        //$insert_1 = "INSERT INTO `tenant_history`(`hostel_no`, `date_checked_in`) VALUES (?,?,?)";
+        $th_data = array(
+            'hostel_no' => $hostel_no,
+            'date_checked_in' => $date_checked_in
+        );
+        $this->db->insert('tenant_history', $th_data);
+
+
+        /*
+         * TENANT_HISTORY_BRIDGE table
+         * INSERT user_id, hostel_no AND record_id  
+         */
+        //$insert_2 = "INSERT INTO tenant_history_bridge (user_id, record_id) VALUES(?,?)";
+        $record_id = $this->db->insert_id();
+        $thb_data = array(
+            'record_id' => $record_id,
+            'user_id' => $user_id
+        );
+        $this->db->insert('tenant_history_bridge', $thb_data);
+
+
+        /*
+         * USER_HOSTEL_BRIDGE table
+         * INSERT user_id, hostel_no AND record_id  
+         */
+        $uhb_data = array(#
+            'hostel_no' => $hostel_no,
+            'user_id' => $user_id,
+            'record_id' => $record_id
+        );
+        $this->db->insert('user_hostel_bridge', $uhb_data);
+    }
+
+    function changeStatus($email, $room_assigned, $no_sharing) {
+        //$query = 'UPDATE users SET user_status = "Tenant", room_assigned = ?, no_sharing = ? WHERE email = ?';
+        $update_data = array(
+            'user_status' => "Tenant",
+            'room_assigned' => $room_assigned,
+            'no_sharing' => $no_sharing
+        );
+        $this->db->where('email', $email);
+        $this->db->update('users', $update_data);
+    }
+
+    //Show the room details for a wing
+    function showRooms($gender) {
+        $hostel_no = $this->session->hostel_no;
+
+        //$query_1 = "SELECT no_sharing FROM rooms WHERE hostel_no = ?";
+        $cond = array('hostel_no' => $hostel_no);
+        $no_sharing = $this->table_model->getRowQuery('rooms', array('no_sharing'), $cond);
+
+        foreach ($no_sharing->result_array() as $room) {
+            $no_sharing = $room['no_sharing'];
+
+            if (isset($gender)) {//room information for a specific wing
+                $wing = $gender;
+                $sql = 'SELECT COUNT(*) AS count FROM room_allocation WHERE spaces > 0 '
+                        . 'AND wing = ? AND no_sharing = ? AND hostel_no = ?';
+
+                $param = array($wing, $no_sharing, $hostel_no);
+                $count_query = $this->db->query($sql, $param);
+
+                foreach ($count_query->result_array() as $row) {
+                    $count = $row['count'];
+                    echo'
+                    <span class="lead inline-text mx-3">
+                        ' . $no_sharing . ' Sharing:
+                        <span class="border px-2">' . $count . '</span>
+                    </span>
+                        ';
+                }
+            }
+        }
+    }
+
+    /*     * ******End: Add tenant********** */
+
+    function removeTenant() {
+        //Form data
+        $user_id = $this->input->post('user_id');
+        $name = $this->input->post('name');
+        $room_assigned = $this->input->post('room_assigned');
+        $no_sharing = $this->input->post('no_sharing');
+        $hostel_no = $this->session->hostel_no;
+        
+        $data = array(
+            'user_id' => $user_id,
+            'room_assigned' => $room_assigned,
+            'no_sharing' => $no_sharing
+        );
+
+        //Table conditions
+        $hostel_where = array('hostel_no'=>$hostel_no);
+        $room_where = array('hostel_no'=>$hostel_no,'no_sharing'=>$no_sharing);
+        $tr_where = array('hostel_no'=>$hostel_no,'room_no'=>$room_assigned);
+        $user_where = array('user_id'=>$user_id);
+        
+        //Get data from different tables-->Table name = First param
+        $hostel = $this->table_model->getArray('hostels',$hostel_where);
+        $room = $this->table_model->getArray('rooms',$room_where);
+        $this_room = $this->table_model->getArray('room_allocation',$tr_where);
+        $user = $this->table_model->getArray('users',$user_where);
+
+        //Get the record id for specific user
+        $record_arr = $this->table_model->getRows('user_hostel_bridge', array('record_id'), $user_where);
+        $record_id = $record_arr['record_id'];
+
+        date_default_timezone_set('Africa/Nairobi');
+        $date_checked_out = date('Y-m-d H:i:s');
+
+        /*
+         * Start transaction
+         * Note: remove =  model. Path: actions/remove_tenant 
+         */
+        $this->db->trans_start();
+        
+        //Update users table
+        $this->remove->updateUsers($user_id);
+
+        //Update tenant history table
+        $this->remove->updateHistory($record_id, $date_checked_out);
+
+        //Delete user_id from user_tenant_bridge
+        $this->remove->deleteFromBridge($user_id);
+
+        //Free up one slot on the database
+        $this->remove->updateVacancies($hostel, $room, $user);
+
+        //Update the room_allocation
+        $this->remove->updateRooms($this_room, $hostel, $data);
+
+        //Remove them from ooking table
+        $this->table_model->deleteRow('bookings', array('user_id'=>$user_id));
+
+        //End the transaction
+        $this->db->trans_complete();
+        
+        //If all queries are successfully executed...
+        if ($this->db->trans_status() == 1) {
+            echo $name . ' has been removed as a tenant';
+        } 
     }
 
 }

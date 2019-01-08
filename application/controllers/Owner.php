@@ -122,7 +122,12 @@ class Owner extends CI_Controller {
 
         echo json_encode($array);
     }
-
+    
+    function show_rooms(){
+        $gender = $this->input->post('gender');
+        $this->owner_model->showRooms($gender);
+    }
+    
     function available_rooms() {
         $data = array(
             'gender' => $this->input->post('gender'),
@@ -173,7 +178,7 @@ class Owner extends CI_Controller {
 
     function verify_user() {
         $data = array(
-            'hostel_no' => $this->session->userdata('hostel_no'),
+            'hostel_no' => $this->session->hostel_no,
             'email' => $this->input->post('email'),
             'room_assigned' => $this->input->post('room_assigned'),
             'no_sharing' => $this->input->post('no_sharing')
@@ -188,8 +193,15 @@ class Owner extends CI_Controller {
             'room_assigned' => $this->input->post('room_assigned'),
             'no_sharing' => $this->input->post('no_sharing')
         );
+        
+        $this->owner_model->addTenant($data);
     }
 
+    
+    function remove_tenant(){
+        $this->owner_model->removeTenant();
+    }
+    
     /*     * ***End: Javascript helpers*** */
 
 

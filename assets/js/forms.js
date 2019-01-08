@@ -1,5 +1,5 @@
+var valid_sign_in = false;
 $(document).ready(function(){
-
     getDefaults();
    
    /******Action Listeners********/
@@ -37,9 +37,8 @@ $(document).ready(function(){
    });
     
     $(".sign-in").submit(function(event){
-        if(!validSignIn()){
-           event.preventDefault();
-       } 
+        event.preventDefault();
+        validSignIn();
     });
    /******End; Action Listeners********/
    
@@ -127,41 +126,54 @@ $(document).ready(function(){
    }
  /*******Ensure valid password is entered********/
     
-   var valid_sign_in = false;
-   function validSignIn(){
+   function validSignIn(){ 
        var email = $(".sign-in #email").val();
        var pwd = $(".sign-in #pwd").val();
        console.log("Email:"+email);
        
-       $.post(base_url+"user_ctrl/sign_in_action", {email: email, pwd: pwd}, function(data){
-           console.log(data);
-           if(data ==="invalid-email"){
-               //Show error
-               $("#email").addClass("is-invalid");
-               valid_sign_in = false;
-               
-           }else if(data === "invalid-pwd"){
-               //Show error
-               $("#email").removeClass("is-invalid");
-               $("#pwd").addClass("is-invalid");
-               valid_sign_in = false;
-               
-           }else if(data === "Account blocked"){
-               $('#email-feedback').html(data);
-                $("#email").addClass("is-invalid");
-                valid_sign_in = false;
+       $.ajax({
+          url:base_url+"user_ctrl/sign_in_action",
+          method: 'POST',
+          data: {email:email, pwd:pwd},
+          cache: true,
+          beforeSend:function(){
+               $('#sign-in-btn').html('Verifying...');
+          },
+          success:function(data){
                 
-           }else{
-               valid_sign_in = true;
+                if(data ==="invalid-email"){
+                     //Show error
+                     $("#email").addClass("is-invalid");
+                     valid_sign_in = false;
+                     
+                 }else if(data === "invalid-pwd"){
+                     //Show error
+                     $("#email").removeClass("is-invalid");
+                     $("#pwd").addClass("is-invalid");
+                     valid_sign_in = false;
+
+                 }else if(data === "Account blocked"){
+                     $('#email-feedback').html(data);
+                      $("#email").addClass("is-invalid");
+                      valid_sign_in = false;
+                 }else{
+                     valid_sign_in = true;
+                     redirect(data);
+                } 
+                 $('#sign-in-btn').html('Sign in');
+           },
+           error:function(xhr, textStatus, errorThrown){
+                console.log(xhr.responseText);
            }
-       }).fail(function(xhr, textStatus, errorThrown){
-           console.log(xhr.responseText);
-       });   
-       
+       });
+         
        console.log("Validity: "+valid_sign_in);
-        return  valid_sign_in;
+       return valid_sign_in;
    }
    
+   function redirect(data){
+       location.href(base_url+data);
+   }
    
    /*****Called on load******/
    function getDefaults(){

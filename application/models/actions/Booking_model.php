@@ -5,8 +5,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Booking_Model extends CI_Model {
 
     function userBooked($user_id) {
-        //$query = 'SELECT * FROM `bookings` WHERE user_id = ?';
-        $query = $this->db->get_where('bookings', $user_id);
+        $sql="SELECT * FROM users JOIN bookings ON users.user_id = bookings.user_id WHERE "
+                . "users.user_id = ? AND users.user_status IS NULL";
+        
+        $query = $this->db->query($sql,$user_id);
 
         return $query->row_array();
     }

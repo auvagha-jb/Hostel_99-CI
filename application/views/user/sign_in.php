@@ -6,7 +6,6 @@
 <!--Form-->
     <div class="container-fluid padding">
         <form method="post" action="<?= base_url('user_ctrl/sign_in_action');?>" class="sign-in">
-            
             <div class="lead form-text">Sign in</div>
             <div class="form-group">
                 <label>Email Address</label>
@@ -18,11 +17,11 @@
                 <input type="password" name="pwd" id="pwd" class="form-control" required="">
                 <div class="invalid-feedback">Incorrect password</div>
             </div>
-            <button class="btn btn-secondary">Sign in</button>
+            <button  class="btn btn-secondary" id="sign-in-btn">Sign in</button>
             
             <br>
             <small class="form-text">
-                Don't have an account?<a href='sign-up.php'>Sign up</a>
+                Don't have an account?<a href='<?= base_url('main/sign-up');?>'>Sign up</a>
             </small>
         </form>
         

@@ -24,26 +24,54 @@ $(document).ready(function () {
             success: function (data)   // A function to be called if request succeeds
             {
                 appendTable(data);
-                $('#tenants-table').DataTable({
-                    "language": {
-                        "emptyTable": "No tenants are listed in your hostel"
-                    }
-                });
+                dataTable('tenants-table');
             },
             error: function (xhr, textStatus, errorThrown) {
                 console.log(xhr.responseText);
             }
         });
     }
+    
+
+    function dataTable(table_id) {  
+        dataTable = function(){};//Kill as soon as it is called to avoid reinitialization of dataTable
+          $('#'+table_id).DataTable({
+            "language": {
+                "emptyTable": "No tenants are listed in your hostel"
+            }
+        }); 
+    }
 
     function appendTable(data) {
-        if (data != "") {
+        if (data !== null) {
             $("no-tenants-msg").hide();
-            $("#tenants-table tbody").append(data);
+            $("#tenants-table tbody").html(data);
         } else {
             $("#no-tenants-msg").show();
         }
     }
+    
+    /*********Work in progress*******/
+//        var table = $('#tenants-table').DataTable({
+//            "processing":true,
+//            "serverSide":true,
+//            "ajax":{
+//                url:base_url + "owner/show_tenants",
+//                type:"POST"
+//            },
+//            "language": {
+//                "emptyTable": "No tenants are listed in your hostel"
+//            }
+//        });     
+        //refresh(table);
+    
+    function refresh(table){
+        setInterval(function(){
+            table.ajax.reload();
+        },3000);
+    }
+    /*********Work in progress*******/
+    
     /**********End: Show Tenants************/
 
 
@@ -98,7 +126,7 @@ $(document).ready(function () {
         var room_assigned = $("#room_assigned").val();
         var no_sharing = $("#no_sharing").val();
 
-        $.post(base_url+"owner/add_tenant", {email: email, room_assigned: room_assigned, no_sharing: no_sharing}, function (data, status) {
+        $.post(base_url + "owner/add_tenant", {email: email, room_assigned: room_assigned, no_sharing: no_sharing}, function (data, status) {
 
             if (data != "") {
                 //Display succes message
@@ -153,11 +181,10 @@ $(document).ready(function () {
     }
 
     function getNoSharing() {
-
         $.post(base_url + "owner/get_no_sharing", function (data) {
             $("#no_sharing").append(data);
-        }, "json").
-                fail(function (xhr, textStatus, errorThrown) {
+        }, "json")
+                .fail(function (xhr, textStatus, errorThrown) {
                     console.log(xhr.responseText);
                 });
     }//End of function 
@@ -232,11 +259,15 @@ $(document).ready(function () {
 
 
     function removeTenant(user_id, name, room_assigned, no_sharing) {
-        $.post("owner-remove-tenant.php", {user_id: user_id, name: name, room_assigned: room_assigned, no_sharing: no_sharing}, function (data) {
+        $.post(base_url + "owner/remove_tenant", {user_id: user_id, name: name, room_assigned: room_assigned, no_sharing: no_sharing},
+        function (data) {
             $("#feedback").addClass("alert alert-success");
             $("#feedback").html(data);
             refreshTable();
-        });
+        })
+                .fail(function (xhr, textStatus, errorThrown) {
+                    console.log(xhr.responseText);
+                });
 
     }//End of function
 
@@ -260,7 +291,7 @@ $(document).ready(function () {
     function refreshTable() {
         $("#hostel_overview").slideUp();
         //clearTable();
-        appendTable();//Display the updated table
+        showTenants();//Display the updated table
         vacancies_bookings();
     }
 
