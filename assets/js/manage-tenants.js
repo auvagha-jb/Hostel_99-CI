@@ -1,17 +1,17 @@
-$(document).ready(function () {
+$(function () {
     //Styling
     $(".inline-text").addClass("mr-3");
     $(".inline-text").addClass("my-3");
     $(".modal-body .card").addClass("mx-4 my-3");
 
-    /*
-     * On load...
-     */
-    showTenants();
-    getNoSharing();
-    vacancies_bookings();
+    $(document).ready(onLoad());
 
-
+    //Functions executed on load
+    function onLoad(){
+        showTenants();
+        getNoSharing();
+        vacancies_bookings();
+    }
 
     /**********Action: Show Tenants************/
     function showTenants() {
@@ -43,7 +43,7 @@ $(document).ready(function () {
     }
 
     function appendTable(data) {
-        if (data !== null) {
+        if (data !== null || data !="") {
             $("no-tenants-msg").hide();
             $("#tenants-table tbody").html(data);
         } else {
@@ -139,7 +139,10 @@ $(document).ready(function () {
             } else {
                 alert("Not executed");
             }
+        }).fail(function (xhr, textStatus, errorThrown) {
+            console.log(xhr.responseText);
         });
+        
         $("#add-tenant-form #room_assigned").val("");//Clear the room assigned
     }//End of function
 

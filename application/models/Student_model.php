@@ -53,7 +53,7 @@ class Student_Model extends CI_Model {
         return $query;
     }
 
-    /*     * *******Handling bookings******** */
+    /********Handling bookings*********/
 
     function addToCart($data) {
         $hostel_no = $data['hostel_no'];

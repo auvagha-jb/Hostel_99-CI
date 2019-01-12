@@ -26,7 +26,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <script src="<?= base_url('assets/tools/jquery/jquery-3.3.1.js');?>"></script>
     <script src="<?= base_url('assets/tools/popper/popper.min.js');?>"></script>
     <script src="<?= base_url('assets/tools/bootstrap-4.0.0-dist/js/bootstrap.min.js');?>"></script>
-<!--    <script src="<?= base_url('assets/tools/font-awesome/all.js');?>"></script>-->
+<!--    <script src="<?php //base_url('assets/tools/font-awesome/all.js');?>"></script>-->
     <script src="<?= base_url('assets/tools/angular-js/angular.min.js');?>"></script>
     <script src="<?= base_url('assets/tools/angular-js/angular-animate.min.js');?>"></script>
     <script src="<?= base_url('assets/tools/angular-js/angular-route.min.js');?>"></script>
@@ -59,7 +59,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     
     //Custom Links
     if (isset($css)) {
-        setCSS($css);
+        //Adds customs css links
+        applyCSS($css);
     }
     ?>
     <title><?=$header['title'];?></title>
@@ -108,7 +109,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <li class="dropdown">
                         <a class="btn btn-secondary dropdown-toggle" href="#">'.$first_name.'</a>
                         <div class="dropdown-content">
-                            <a class="nav-link" href="student-view-details.php">My Details</a>
+                            <a class="nav-link" href="'.base_url('student/view_details/'.$id).'">My Details</a>
                             <a class="btn btn-danger" href="'.base_url('main/logout').'">Sign out</a>
                         </div>
                     </li>

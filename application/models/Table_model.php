@@ -8,6 +8,11 @@ class Table_Model extends CI_Model{
         return $query->row_array();
     }
 
+    public function getQuery($table,$param){
+        $query = $this->db->get_where($table, $param);
+        return $query;
+    }
+    
     public function getCustomQuery($sql,$param){
         $query = $this->db->query($sql, $param);
         return $query;
@@ -18,16 +23,10 @@ class Table_Model extends CI_Model{
         return $query->row_array();
     }
     
-    public function getQuery($table,$param){
-        $query = $this->db->get_where($table, $param);
-        return $query;
-    }
-    
-    function getJoinArray($sql, $param){       
-        $query = $this->db->query($sql,$param);
-        return $query->row_array();
-    }
-    
+    /*
+     * Selects specific columns
+     * Returns row_array()
+     */
     function getRows($table, $cols, $cond=""){
         if(!empty($cond)){
             $this->db->where($cond);
@@ -39,6 +38,10 @@ class Table_Model extends CI_Model{
         return $query->row_array();   
     }
     
+    /*
+     * Selects specific columns
+     * Returns query object
+     */ 
     function getRowQuery($table, $cols, $cond=""){
         if(!empty($cond)){
             $this->db->where($cond);
@@ -66,8 +69,9 @@ class Table_Model extends CI_Model{
         return $query->num_rows();
     }
     
-    function countRows($query){
-        return $this->db->count_all_results();
+    function getNumRows($table,$cond){
+        $query = $this->db->get_where($table, $cond);
+        return $query->num_rows();
     }
     
     

@@ -635,7 +635,10 @@ class Owner_Model extends CI_Model {
         $email = $data['email'];
         $room_assigned = $data['room_assigned'];
         $no_sharing = $data['no_sharing'];
-
+        
+        //Session data
+        $hostel_no = $this->session->hostel_no;
+        
         //Get the user data from the db
         $get = $this->table_model->getArray('users', array('email' => $email));
         $user_id = $get['user_id'];

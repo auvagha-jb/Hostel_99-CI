@@ -30,15 +30,24 @@ function user_verify() {
 
     $get = $_SERVER['QUERY_STRING'];
     $page = $CI->uri->segment(2);
+    $param = $CI->uri->segment(3);
+    
     $module = strtolower($CI->uri->segment(1));
     $current_url = $module . '/' . $page;
+    
+    !empty($param)?
+        $current_url.='/'.$param
+        :$current_url;//If there is a variable in the third seg..
+    
+    !empty($get) ? 
+        $current_url.='?' . $get 
+        : $current_url; //If there is a get variable, append it to the url 
 
-    isset($get) ? $current_url.='?' . $get : $current_url; //If there is a get variable, append it to the url 
-
+    
     $page_array = array('sign_in', 'sign_up', '');
     $module_array = array('owner', 'admin', 'welcome');
 
-    /*     * Session variables* */
+    /***Session variables***/
     $user_type = $CI->session->user_type;
     $user_id = $CI->session->user_id;
 
@@ -57,9 +66,9 @@ function user_verify() {
     }
 }
 
-function setCSS($css) {
-    for ($i = 0; $i < count($css); $i++) {
-        echo '<link rel="stylesheet" href="' . assets_url('css/' . $css[$i]) . '.css">';
+function applyCSS($css) {
+    foreach($css as $css_link) {
+        echo '<link rel="stylesheet" href="' . assets_url('css/' . $css_link) . '.css">';
     }
 }
 
@@ -73,7 +82,7 @@ function uploads_url($path) {
     return base_url('uploads/' . $path);
 }
 
-/* * *****End: Uri handling******* */
+/*******End: Uri handling********/
 
 /*
  * Page Sections

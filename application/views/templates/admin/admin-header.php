@@ -36,16 +36,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
         //Custom Links
         if (isset($css)) {
-            setCSS($css);
+            applyCSS($css);
         }
 
         //Load admin model
         $CI = &get_instance();
         $CI->load->model('admin_model');
         ?>
-
-
-
     </head>
 
     <body>

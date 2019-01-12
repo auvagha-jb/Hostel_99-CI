@@ -8,8 +8,7 @@ class Student extends CI_Controller{
         $this->load->model('student_model');
     }
 
-
-    /***Search results for hostel***/
+    //Search results for hostel
     function search_results(){
         $searchdata = array(
             'location_home' => $this->input->post('location_home'),
@@ -22,6 +21,46 @@ class Student extends CI_Controller{
         
         $this->load->view('templates/header',$data);
         $this->load->view('student/hostel-search-results');
+    }
+    
+    function view_details($user_id){
+        $data['header'] = $this->page_model->setTitle('My details');
+        $data['css'] = array('forms');
+        //SELECT 8 FROM users WHERE user_id = ?
+        $data['row'] = $this->table_model->getArray('users',array('user_id'=>$user_id));
+        
+        $this->load->view('templates/header',$data);
+        $this->load->view('student/view-details');
+        $this->load->view('templates/footer');
+    }
+    
+    function update_details(){
+        $update_data = array(
+            'first_name'=>$_POST['first_name'],  
+            'last_name'=>$_POST['last_name'],  
+            'email'=>$_POST['email'],  
+            'country_code'=>$_POST['country_code'],  
+            'phone_no'=>$_POST['phone_no'],  
+      );
+      $where = array('user_id'=>$_SESSION['user_id']);  
+  
+      $this->table_model->updateRows('users', $where,$update_data);
+        alert("Update succesful");
+        header("refresh:0; url=".base_url('student/view_details/'.$_SESSION['user_id']));
+    }
+    
+    
+    //Javascript helper: Ensures the user does not update email to one which is already taken 
+    function email_available(){
+        $where = array(
+          'email' => $this->input->post('email'),
+           'user_id !='=>$this->input->post('user_id')
+        );
+        $num = $this->table_model->getNumRows('users',$where);
+        
+        if($num > 0){
+            echo 'email-exists';
+        }
     }
     
     /*********Hostel room booking*********/

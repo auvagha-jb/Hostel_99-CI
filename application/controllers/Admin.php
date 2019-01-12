@@ -61,23 +61,8 @@ class Admin extends CI_Controller{
         
     }
     
-    function user_delete($id, $name, $user_status = ""){
-        //To remove %20 from name
-        $name = str_replace('%20', ' ', $name);
-        $where = array('user_id'=>$id);
-        $booked = $this->admin_model->userBooked($id);
-        $user_status ==="Tenant"?$tenant = true:$tenant = false;
-        
-        if(!$booked && !$tenant){
-            $this->db->trans_start(TRUE);
-            $this->table_model->deleteRow('users', $where);
-            $this->db->trans_complete();
-        }elseif ($booked) {
-            alert($name." had booked, therefore needs to remain in the system");
-        }elseif($tenant){
-            alert($name." is a tenant, therefore needs to remain in the system");
-        }
-//        redirect('admin/users');
+    function user_delete(){
+        $this->admin_model->userDelete();
     }
     
     /**********End: Javascript helpers**********/

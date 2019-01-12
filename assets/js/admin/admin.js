@@ -16,8 +16,8 @@
     //Functions to be executed on load
     function main(){
         //Display the registered and suspended users tables
-        ajax(users_url,users_id,users_empty_msg);
-        ajax(suspended_url,suspended_id,suspended_empty_msg);
+        get_table(users_url,users_id,users_empty_msg);
+        get_table(suspended_url,suspended_id,suspended_empty_msg);
     }
 
     $('#suspend').click(function () {
@@ -25,15 +25,16 @@
         $("i", this).toggleClass("fas fa-lock");
     });
     
-    $(document).on('click','.delete',function(){
+    $(document).on('click','.delete_user',function(){
        //The user or hostel to be deleted
         var name = $(this).closest('tr').children().eq(1).text();
         var id = $(this).closest('tr').children().eq(0).text();
         var user_status = $(this).closest('tr').children().eq(5).text();
+        var table_id = $(this).closest('table').attr('id');
         var confirmed = confirm_del(name);
         
         if(confirmed){
-            console.log(id,name,user_status);
+            removeUser(id,name,user_status,table_id);
         }
     });
     
@@ -44,27 +45,33 @@
     }
 
     function dipslaySuccess(msg){
+        $('#users-success').html(msg);
         $('#users-success').slideDown().delay(3000).slideUp();
+        setTimeout(function(){
+           $('#users-success').empty(); 
+        },3000);
     }
     
     
     /********Action: Remove user*********/
-    function refreshTable(){
-        ajax(link,table_id,empty_msg,data);
-    }
-     
-     function removeUsers(id,name,user_status){
-        var delete_link = 'admin/user_delete/'+id+'/'+name+'/'+user_status;
-        
+    /*
+     * 
+     * @param {string} id
+     * @param {string} name
+     * @param {string} user_status
+     * @param {string} table_id
+     * @returns {void}
+     */
+     function removeUser(id,name,user_status,table_id){
+        var delete_link = 'admin/user_delete';
         $.ajax({
             url: base_url + delete_link, // Url to which the request is send
-            type: "POST", // Type of request to be send, called as method
-            dataType: "JSON",
-            cache: false, // To unable request pages to be cached
-            processData: false, // To send DOMDocument or non processed data file it is set to false
+            method:'POST',
+            dataType: 'JSON',
+            data:{id:id,name:name,user_status:user_status},
             success: function (data)   // A function to be called if request succeeds
             {
-                appendTable(data,'user-table');
+                refresh_table(users_url,table_id,users_empty_msg);
                 dipslaySuccess(data);
             },
             error: function (xhr, textStatus, errorThrown) {
@@ -82,7 +89,7 @@
      * @param {type} empty_msg
      * @returns {void}
      */
-     function ajax(link,table_id,empty_msg,data){
+     function get_table(link,table_id,empty_msg){
         $.ajax({
             url: base_url + link, // Url to which the request is send
             type: "POST", // Type of request to be send, called as method
@@ -100,11 +107,33 @@
         });
     }
     
+    /*
+     * @param {string} link
+     * @param {string} table_id
+     * @param {type} empty_msg
+     * @returns {void}
+     */
+     function refresh_table(link,table_id,empty_msg){
+        $.ajax({
+            url: base_url + link, // Url to which the request is send
+            type: "POST", // Type of request to be send, called as method
+            dataType: "JSON",
+            cache: false, // To unable request pages to be cached
+            processData: false, // To send DOMDocument or non processed data file it is set to false
+            success: function (data)   // A function to be called if request succeeds
+            {
+                appendTable(data,table_id);
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+    
     
     
     //Initializes the datatables plugin
     function dataTable(table_id,empty_msg){
-        datatable = function(){};//Kill the function as soon as it is called to prevent reinitialization of dataTable
         $('#'+table_id).DataTable({
             "language": {
                 "emptyTable": empty_msg

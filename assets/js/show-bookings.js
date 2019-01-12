@@ -13,63 +13,39 @@ $(document).ready(function(){
             processData: false, // To send DOMDocument or non processed data file it is set to false
             success: function (data)   // A function to be called if request succeeds
             {   
-                appendBookings(data);
-                $('#bookings-table').DataTable({
-                    "language":{
-                        "emptyTable": "No bookings at the moment "
-                    }
-                });
+                appendTable('bookings-table',data);
+                dataTable('bookings-table');
             },
             error: function(xhr,textStatus,errorThrown){
                 console.log(xhr.responseText); 
             }
         });
     }
-
-    function appendBookings(data){
-         if (data !== "" || data !==null) {
-                $("no-bookings-msg").hide();
-                $("#bookings-table tbody").append(data);
-            } else {
-                $("#no-bookings-msg").show();
+    
+    function dataTable(table_id) {  
+        dataTable = function(){};//Kill as soon as it is called to avoid reinitialization of dataTable
+          $('#'+table_id).DataTable({
+            "language": {
+                "emptyTable": "No bookings at the moment"
             }
+        }); 
+    }
+
+    function appendTable(table_id, data){
+        if (data !== "" || data !==null) {
+               $(`#${table_id} tbody`).html(data);
+           }
     }
     /**********End: Show Tenants************/
     
     
-    function showBookingsTable(){    
-        $.post("php-owner/owner-get-bookings-table.php", function(data, status){
-          if(data != ""){
-              $("no-bookings-msg").hide();
-              $("#bookings-table tbody").html(data);
-          }else{
-              $("#bookings-table tbody").html(data);
-              $("#no-bookings-msg").show();
-          }
-       });
-       
-   }//End of function
-    function showDefaultBookingsTable(){    
-        $.post("php-owner/owner-get-bookings-table.php", function(data, status){
-          
-          if(data != ""){
-              $("no-bookings-msg").hide();
-              $("#bookings-table tbody").append(data);
-          }else{
-              $("#no-bookings-msg").show();
-          }
-          $('#bookings-table').DataTable();
-       });
-       
-   }//End of function
-
+    /***********Action: Add tenant ***********/
     $(document).on("click","#add-tenant", function(){
         var email = $(this).closest("tr").children().eq(4).text();
         var name = $(this).closest("tr").children().eq(1).text();
         var room_assigned = $(this).closest("tr").children().eq(5).text();
         var no_sharing = $(this).closest("tr").children().eq(6).text();
         showModal(email, name, room_assigned,no_sharing);
-        showTenantsTable();
     });
     
     $(document).on("click","#confirm_add", function(){
@@ -96,7 +72,7 @@ $(document).ready(function(){
       var room_assigned = $(form+" #room_assigned").val();
       var no_sharing = $(form+" #no_sharing").val();
             
-      $.post("owner-add-tenant.php", {email:email, room_assigned:room_assigned,no_sharing:no_sharing}, function(data, status){
+      $.post(base_url+"owner/add_tenant", {email:email, room_assigned:room_assigned,no_sharing:no_sharing}, function(data, status){
           if(data != ""){
               $("#no-tenants-msg").hide();//Remove no-tenants message
                 showSuccess(data);
@@ -108,6 +84,8 @@ $(document).ready(function(){
        });
    }//End of function
    
+   /***********End: Add tenant ***********/
+   
    function showSuccess(data){
       //Display success message
       $("#bookings-feedback").removeClass("alert alert-danger");
@@ -117,7 +95,7 @@ $(document).ready(function(){
     
    function refreshTable(){
       $("#hostel_overview").slideUp();
-      showBookingsTable();//Display the updated table
+        showBookings();//Display the updated table
    }
    
    function clearTable(){
@@ -125,22 +103,33 @@ $(document).ready(function(){
    }//End of function
    
    function updateTenants(){
-      $.post("owner-get-tenants-table.php", function(data, status){
-          if(data != ""){
-              $("no-tenants-msg").hide();
-              $("#tenants-table tbody").html(data);
-          }else{
-              $("#no-tenants-msg").show();
-          }
-          
-       });
-       $.post("php-owner/owner-update-vacancies.php",function(data){
-            $("#vacancies").html(data);
-       });
-       $.post("php-owner/owner-get-no-booked.php",function(data){
-            $("#pending_bookings").html(data);
-       });
+      $.ajax({
+            url: base_url + "owner/show_tenants", // Url to which the request is send
+            type: "POST", // Type of request to be send, called as method
+            dataType: "JSON",
+            cache: false, // To unable request pages to be cached
+            processData: false, // To send DOMDocument or non processed data file it is set to false
+            success: function (data)   // A function to be called if request succeeds
+            {
+                appendTable('tenants-table',data);
+                //Updates the number of vacancies and bookings once tenant is added
+                vacancies_bookings();
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.log(xhr.responseText);
+            }
+        });
        
    }//End of function
+  
+   function vacancies_bookings() {
+        $.post(base_url + "owner/vacancies_bookings", function (data) {
+            $("#vacancies").html(data.vacancies);
+            $("#pending_bookings").html(data.bookings);
+        }, "json").fail(function (xhr, textStatus, errorThrown) {
+            console.log(xhr.responseText);
+        });
+    }
    
+    
 });

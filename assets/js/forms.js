@@ -1,4 +1,3 @@
-var valid_sign_in = false;
 $(document).ready(function(){
     getDefaults();
    
@@ -18,9 +17,6 @@ $(document).ready(function(){
        pwdMatch(pwd,confirm_pwd);
    });
    
-   $(".update #email").change(function(){
-        availableEmail();
-   });
    
    $(".sign-up").submit(function(event){
        //On submit...ensures that the passwords match and are long enough and the email address does not exist in DB  
@@ -28,13 +24,7 @@ $(document).ready(function(){
             event.preventDefault();
         }
    });
-   
-   $(".update").submit(function(event){
-       //On submit...ensures that the passwords match and are long enough and the email address does not exist in DB  
-       if(!availableEmail()){
-            event.preventDefault();
-        }
-   });
+
     
     $(".sign-in").submit(function(event){
         event.preventDefault();
@@ -62,10 +52,24 @@ $(document).ready(function(){
    }
    
    /******Student update details form********/
-   function availableEmail(){
-       var email = $("#email").val();
+   $(".update #email").change(function(){
+       availableEmail();
+   });
+     
+   $(".update").submit(function(event){
+       //On submit...ensures that the passwords match and are long enough and the email address does not exist in DB  
+       if(!availableEmail()){
+            event.preventDefault();
+        }
+   });
+     
+    function availableEmail(){ 
+       var data ={
+           email: document.getElementById('email').value,
+           user_id: document.getElementById('user_id').value
+       };
        
-       $.post("php/update_details.php", {email: email}, function(data){
+       $.post(base_url+"student/email_available", data, function(data){
             console.log(data);
             if(data === "email-exists"){               
                 $("#email").addClass("is-invalid");
@@ -74,6 +78,8 @@ $(document).ready(function(){
                 $("#email").removeClass("is-invalid");
                 valid = true;
             }
+        }).fail(function(xhr, textStatus, errorThrown){
+                console.log(xhr.responseText);
         });
         
         console.log("Email: "+valid);
@@ -144,22 +150,19 @@ $(document).ready(function(){
                 if(data ==="invalid-email"){
                      //Show error
                      $("#email").addClass("is-invalid");
-                     valid_sign_in = false;
                      
                  }else if(data === "invalid-pwd"){
                      //Show error
                      $("#email").removeClass("is-invalid");
                      $("#pwd").addClass("is-invalid");
-                     valid_sign_in = false;
 
                  }else if(data === "Account blocked"){
                      $('#email-feedback').html(data);
                       $("#email").addClass("is-invalid");
-                      valid_sign_in = false;
+                      
                  }else{
-                     valid_sign_in = true;
                      redirect(data);
-                } 
+                 } 
                  $('#sign-in-btn').html('Sign in');
            },
            error:function(xhr, textStatus, errorThrown){
@@ -167,8 +170,6 @@ $(document).ready(function(){
            }
        });
          
-       console.log("Validity: "+valid_sign_in);
-       return valid_sign_in;
    }
    
    function redirect(data){

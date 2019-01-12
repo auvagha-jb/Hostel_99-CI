@@ -62,10 +62,9 @@ class User_Model extends CI_Model{
                   'user_type' => $user_type  
               );
                 
-              /*
-               * Ensures the user had not been blocked and they are redirected to the right page
-               */
-              $this->redirect_new($data, $user_data);
+              //Get the page the user is to be directed to
+              $page = $this->redirect_user($data, $user_data);
+              redirect($page);
             }
         }
 
@@ -89,46 +88,6 @@ class User_Model extends CI_Model{
                  echo 'all-good';
              }
         } 
-    }
-    
-    //Function to redirect new user on sign in
-    function redirect_new(&$data, &$user_data){
-        $user_type = $data['user_type'];
-        $blocked = $data['blocked'];
-                
-        if($blocked == 0){
-            
-            //Redirect back to the page they were on
-            if(isset($_SESSION['current_url'])){
-                $current_url = $_SESSION['current_url'];
-                $module = $_SESSION['module'];
-                
-                //Set the session variables
-                $this->session->set_userdata($user_data);
-                
-                //Ensures one is not redirected to a module above their access level
-                $clear = $this->rightType($module, $user_type);
-                if($clear){
-                    echo $current_url;
-                    exit();
-                }else{
-                    $this->redirect_user($user_type);
-                }
-                $this->session->unset_userdata('current_url','module');
-            }
-
-            //Set the session variables
-            $this->session->set_userdata($user_data);
-            
-            //Redirect to index pages of the different user types
-            if(isset($_SESSION['user_id'])){
-                   $this->redirect_user($user_type);
-            }   
-            
-          }else{
-              echo 'Account blocked';
-              exit();
-          }  
     }
     
     /***********End: Sign up form action*************/
@@ -172,7 +131,8 @@ class User_Model extends CI_Model{
               );
               
               //Check whether the parricular user had been blocked from the system
-              $this->checkBlocked($data,$user_data); 
+              $page = $this->redirect_user($data, $user_data); 
+              echo $page;
               
           }else{
               //return error message
@@ -188,10 +148,12 @@ class User_Model extends CI_Model{
       }
 }
 
-    function checkBlocked(&$data, &$user_data){
+    //Called upon after a user successfully logs in or signs up
+    function redirect_user(&$data, &$user_data){
         $user_type = $data['user_type'];
         $blocked = $data['blocked'];
-                
+        $data = "";        
+        
         if($blocked == 0){
             
             //Redirect back to the page they were on
@@ -205,28 +167,29 @@ class User_Model extends CI_Model{
                 //Ensures one is not redirected to a module above their access level
                 $clear = $this->rightType($module, $user_type);
                 if($clear){
-                    echo $current_url;
-                    exit();
+                    $data =  $current_url;
                 }else{
-                    $this->redirect_user($user_type);
+                    $data = $this->default_redirect($user_type);
                 }
-                $this->session->unset_userdata('current_url','module');
+                //$this->session->unset_userdata(array('current_url','module'));
+                
+            } else {
+                //Set the session variables
+                $this->session->set_userdata($user_data);
+                //Redirect to index pages of the different user types
+                if(isset($_SESSION['user_id'])){
+                     $data = $this->default_redirect($user_type);
+                }  
             }
-
-            //Set the session variables
-            $this->session->set_userdata($user_data);
-            
-            //Redirect to index pages of the different user types
-            if(isset($_SESSION['user_id'])){
-                   $this->redirect_user($user_type);
-            }   
             
           }else{
-              echo 'Account blocked';
-              exit();
+              $data =  'Account blocked';
           }  
+          
+          return $data;
     }
         
+    //Ensures that higher level modules are accessible to only those authorized
     function rightType($module, $user_type){
         $valid = true;
         
@@ -239,26 +202,26 @@ class User_Model extends CI_Model{
         return $valid;
     }
     
-    function redirect_user($user_type){
+    function default_redirect($user_type){
+        $data = "";
+        
         switch ($user_type){
              case "Student":
-                 echo 'Main/';
+                 $data = 'Main/';
                  break;
              case "Hostel Owner":
-                 echo 'Owner/';
+                 $data = 'Owner/';
                  break;
              case "Admin":
-                 echo 'Admin/';
+                 $data = 'Admin/';
                  break;
          }
+         return $data;
     }
     
     /*****End: Sign in form action *****/
     
     function logout(){
       session_destroy();
-
-      //Redirect to sign_in page
-      //redirect('Main/sign_in');
      }
 }

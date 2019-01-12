@@ -66,7 +66,7 @@ class Admin_Model extends CI_Model {
                 $data.="<td>" . $row['user_type'] . "</td>";
                 $data.="<td>" . $row['room_assigned'] . "</td>";
                 $data.="<td>" . $row['user_status'] . "</td>";
-                $data.='<td><button class="btn btn-danger delete"><i class="fa fa-trash-alt"></i></button></td>';
+                $data.='<td><button class="btn btn-danger delete_user"><i class="fa fa-trash-alt"></i></button></td>';
                 $data.='<td>'
                         . '<button class="btn btn-warning '.$last_col_id.'">'
                         . '<i class="fas fa-lock-open"></i></td></button>';
@@ -76,6 +76,32 @@ class Admin_Model extends CI_Model {
         echo json_encode($data);
     }
 
+    
+    /*******Action: Delete user******/
+    
+    function userDelete(){
+        $id = $this->input->post('id'); 
+        $name = $this->input->post('name'); 
+        $user_status = $this->input->post('user_status');
+        
+        $booked = $this->admin_model->userBooked($id);
+        $user_status ==="Tenant"?$tenant = true:$tenant = false;
+        $data = "";//What is to be echoed
+        
+        if(!$booked && !$tenant){
+            $data = $name." has been permanently removed from the system";
+            $this->db->trans_start();
+            $where = array('user_id'=>$id);
+            $this->table_model->deleteRow('users', $where);
+            $this->db->trans_complete();
+        }elseif ($booked) {
+            $data = $name." had booked, therefore needs to remain in the system";
+        }elseif($tenant){
+            $data = $name." is a tenant, therefore needs to remain in the system";
+        }
+        echo json_encode($data);
+    }
+    
     function userBooked($id) {
         $query_array = $this->booking_model->userBooked($id);
         if (!empty($query_array)) {
