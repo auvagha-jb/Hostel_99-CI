@@ -69,7 +69,7 @@ class Student extends CI_Controller{
         $hostel_no = $this->input->get('id');
         $hostel_name = $this->input->get('hostel_name');
         $hostel_where = array('hostel_no'=>$hostel_no);
-        $get_where = array('hostel_no'=>$hostel_no, 'gender'=>$this->session->gender);
+        $price_where = array('hostel_no'=>$hostel_no, 'gender'=>$this->session->gender);
         
         $data['header'] = $this->page_model->setTitle($hostel_name);
         $data['css'] = array('booking-page');
@@ -77,7 +77,7 @@ class Student extends CI_Controller{
         $data['hostel'] = $this->table_model->getArray('hostels',$hostel_where);
         $data['rules'] = $this->db->get('rules',$hostel_where);
         $data['amenities'] = $this->db->get('amenities',$hostel_where);
-        $data['pricing'] = $this->student_model->getRooms($get_where);
+        $data['pricing'] = $this->student_model->getRooms($price_where);
         /*****************/
         $this->load->view('templates/header',$data);
         $this->load->view('student/book-hostel-room');

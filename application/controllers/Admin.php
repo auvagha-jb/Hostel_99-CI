@@ -47,7 +47,8 @@ class Admin extends CI_Controller{
     
     
     /**********Start: Javascript helpers**********/
-   
+   //Used in the various js files in the assets folder 
+    
     //Show the users table 
     function show_users(){
         $this->admin_model->showUsers();
@@ -57,13 +58,22 @@ class Admin extends CI_Controller{
         $this->admin_model->showSuspendedUsers();
     }
     
-    function delete_user(){
-        
-    }
-    
     function user_delete(){
         $this->admin_model->userDelete();
     }
     
+    function user_suspend($id){
+        $this->admin_model->userSuspend($id);
+    }
+    
+    function user_restore($id){
+        $this->admin_model->userRestore($id);
+    }
+    
+    function hostel_delete($id){
+        $this->admin_model->hostelDelete($id);
+    }
+
+
     /**********End: Javascript helpers**********/
 }

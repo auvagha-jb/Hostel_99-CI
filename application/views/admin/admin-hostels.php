@@ -4,7 +4,7 @@
         //Display table
                 echo "<h2>Registered Hostels</h2>";
                 
-                echo " <table class='w3-table-all w3-centered w3-hoverable admin-table'>";
+                echo " <table class='w3-table-all w3-centered w3-hoverable admin-table' id='admin-hostels'>'";
                 echo "<thead>";
                 echo "<tr>";
                 echo "<th>Hostel Name</th>";
@@ -21,7 +21,7 @@
                     echo "<td>" . $row['hostel_name'] ."</td>";
                     echo "<td>" . $row['location'] . "</td>";
                     echo "<td>" . $row['type'] . "</td>";
-                    echo '<td><a href="hostel-delete.php?id=' . $row['hostel_no'] . '"><i class="far fa-trash-alt"></i></td>';
+                    echo '<td><a href="'.base_url('admin/hostel_delete/' . $row['hostel_no']).'" class="btn btn-danger hostel_delete"><i class="far fa-trash-alt"></i></td>';
 //                    echo '<td><a href="hostel-suspend.php?id1=' . $row['hostel_no'] . '"><i class="fas fa-lock-open"></i></td>';
                     echo "</tr>";
                 }

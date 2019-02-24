@@ -106,6 +106,7 @@ $(document).ready(function(){
         return valid;
    }
    
+   
    function validLength(pwd){
        var valid = true;
        if(pwd.length < 8){

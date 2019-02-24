@@ -51,6 +51,7 @@
                     <div class="form-group">
                         <label>Phone Number</label>          
                             <div class="input-group">
+                                <!--List of country codes-->
                                 <?php country_codes();?>
                                 <div class="input-group-append">
                                     <input type="number" name="phone_no" id="phone_no" class="form-control" required>

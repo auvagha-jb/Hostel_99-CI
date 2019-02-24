@@ -115,6 +115,11 @@ function add_amenities_and_rules() {
     $CI->load->view('sections/add-amenities-and-rules');
 }
 
+function hostel_rating(){
+    $CI = &get_instance();
+    $CI->load->view('student/sections/rating-feature');
+}
+
 /* * *Owner Dashboard** */
 /* Community */
 

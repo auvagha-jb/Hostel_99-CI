@@ -19,18 +19,18 @@ class Admin_Model extends CI_Model {
         return $query;
     }
 
-    /***********Displaying the various tables***********/
+    /*     * *********Displaying the various tables********** */
 
     //For the registered users
-    function showUsers(){
+    function showUsers() {
         $this->displayUsersTable('0');
     }
-    
+
     //For the suspended users
-    function showSuspendedUsers(){
+    function showSuspendedUsers() {
         $this->displayUsersTable('1');
     }
-    
+
     //Users table query
     function getUsers() {
         //SELECT [cols] FROM `users` WHERE NOT user_type = 'Admin' ORDER BY user_type DESC
@@ -45,63 +45,66 @@ class Admin_Model extends CI_Model {
 
     //Users table printing
     function displayUsersTable($blocked) {
+        //Query to select users
         $query = $this->getUsers();
         $data = "";
-        
+
         foreach ($query->result_array() as $row) {
             $id = $row['user_id'];
             $name = $row['first_name'] . " " . $row['last_name'];
             $status = $row['user_status'];
-            $last_col_id = "user-restore";
             
-           if($blocked == 1){
-               $last_col_id = "user-suspend";
-           }
-            
+            /*
+             * Assign last column a class based on the status of the block
+             * 1 = restore suspended user
+             * 0 = susupend registered user
+             */
+            $last_col_class = ($blocked == 1)? "user-restore":"user-suspend";
+
+            //Display rows in which the value in the clocked column matches the blocked value passed as an argument 
             if ($row['blocked'] == $blocked) {
-                $data.= "<tr>";
-                $data.= "<td>" . $row['user_id'] . "</td>";
-                $data.="<td>" . $name . "</td>";
-                $data.="<td>" . $row['email'] . "</td>";
-                $data.="<td>" . $row['user_type'] . "</td>";
-                $data.="<td>" . $row['room_assigned'] . "</td>";
-                $data.="<td>" . $row['user_status'] . "</td>";
-                $data.='<td><button class="btn btn-danger delete_user"><i class="fa fa-trash-alt"></i></button></td>';
-                $data.='<td>'
-                        . '<button class="btn btn-warning '.$last_col_id.'">'
+                $data .= "<tr>";
+                $data .= "<td>" . $row['user_id'] . "</td>";
+                $data .= "<td>" . $name . "</td>";
+                $data .= "<td>" . $row['email'] . "</td>";
+                $data .= "<td>" . $row['user_type'] . "</td>";
+                $data .= "<td>" . $row['room_assigned'] . "</td>";
+                $data .= "<td>" . $row['user_status'] . "</td>";
+                $data .= '<td><button class="btn btn-danger delete_user"><i class="fa fa-trash-alt"></i></button></td>';
+                $data .= '<td>'
+                        . '<button class="btn btn-warning ' . $last_col_class . '">'
                         . '<i class="fas fa-lock-open"></i></td></button>';
-                $data.="</tr>";
+                $data .= "</tr>";
             }
         }
         echo json_encode($data);
     }
 
-    
-    /*******Action: Delete user******/
-    
-    function userDelete(){
-        $id = $this->input->post('id'); 
-        $name = $this->input->post('name'); 
+    /*     * *****Action: Delete user***** */
+
+    function userDelete() {
+        $id = $this->input->post('id');
+        $name = $this->input->post('name');
         $user_status = $this->input->post('user_status');
-        
+
         $booked = $this->admin_model->userBooked($id);
-        $user_status ==="Tenant"?$tenant = true:$tenant = false;
-        $data = "";//What is to be echoed
-        
-        if(!$booked && !$tenant){
-            $data = $name." has been permanently removed from the system";
+        $user_status === "Tenant" ? $tenant = true : $tenant = false;
+        $data = ""; //What is to be echoed
+
+        if (!$booked && !$tenant) {
+            $data = $name . " has been permanently removed from the system";
             $this->db->trans_start();
-            $where = array('user_id'=>$id);
+            $where = array('user_id' => $id);
             $this->table_model->deleteRow('users', $where);
             $this->db->trans_complete();
-        }elseif ($booked) {
-            $data = $name." had booked, therefore needs to remain in the system";
-        }elseif($tenant){
-            $data = $name." is a tenant, therefore needs to remain in the system";
+        } elseif ($booked) {
+            $data = $name . " had booked, therefore needs to remain in the system";
+        } elseif ($tenant) {
+            $data = $name . " is a tenant, therefore needs to remain in the system";
         }
         echo json_encode($data);
     }
-    
+
     function userBooked($id) {
         $query_array = $this->booking_model->userBooked($id);
         if (!empty($query_array)) {
@@ -109,5 +112,29 @@ class Admin_Model extends CI_Model {
         }
         return false;
     }
+    
+    function userSuspend($id){
+        $update_data = array(
+            "blocked"=>1
+        );
+        
+        $this->db->where('user_id',$id);
+        $this->db->update('users',$update_data);
+    }
+    
+    function userRestore($id){
+        $update_data = array(
+            "blocked"=>0
+        );
+        
+        $this->db->where('user_id',$id);
+        $this->db->update('users',$update_data);       
+    }
 
+    function hostelDelete($id){
+        $this->db->where('hostel_no', $id);
+        $this->db->delete('hostels');
+
+        redirect('admin/hostels');
+    }
 }

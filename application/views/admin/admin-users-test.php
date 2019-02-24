@@ -1,6 +1,6 @@
 <center class="alert alert-success fixed-top hide" id="users-success"></center>
 
-<!--Inner navigation bar to switch between tables-->
+<!--Inner navigation bar to switch between tables of registered users and susupended users-->
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
         <a class="nav-item nav-link active" id="users-tab" data-toggle="tab" href="#users" role="tab" aria-controls="users" aria-selected="true">Users</a>
