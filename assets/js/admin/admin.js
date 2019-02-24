@@ -18,7 +18,7 @@ $(() => {
         //Display the registered and suspended users tables
         get_table(users_url, users_id, users_empty_msg);
         get_table(suspended_url, suspended_id, suspended_empty_msg);
-        dataTable("admin-hostels", "No hostels have been registered in the system"); 
+        dataTable("admin-hostels", "No hostels have been registered in the system");
     }
 
     $('#suspend').click(function () {
@@ -33,14 +33,23 @@ $(() => {
         var user_status = $(this).closest('tr').children().eq(5).text();
         var table_id = $(this).closest('table').attr('id');
         var confirmed = confirm_del(name);
+        let data = {
+            id, name, user_status
+        };
+
 
         if (confirmed) {
-            removeUser(id, name, user_status, table_id);
+            //Carry out asynchronous request to delete data, then refresh table
+            ajax("admin/user_delete", data).then(data => {
+                //Refresh table based on whether the user was removed or not then display feedback
+                data.status ? refresh_table(users_url, table_id, users_empty_msg): null;
+                dipslaySuccess(data.message);
+            });
         }
     });
 
     function confirm_del(name) {
-        var del = confirm("Delete " + name + " ?");
+        var del = confirm("Delete " + name + "?");
 
         return del;
     }
@@ -51,34 +60,6 @@ $(() => {
         setTimeout(function () {
             $('#users-success').empty();
         }, 3000);
-    }
-
-
-    /********Action: Remove user*********/
-    /*
-     * 
-     * @param {string} id
-     * @param {string} name
-     * @param {string} user_status
-     * @param {string} table_id
-     * @returns {void}
-     */
-    function removeUser(id, name, user_status, table_id) {
-        var delete_link = 'admin/user_delete';
-        $.ajax({
-            url: base_url + delete_link, // Url to which the request is send
-            method: 'POST',
-            dataType: 'JSON',
-            data: {id: id, name: name, user_status: user_status},
-            success: function (data)   // A function to be called if request succeeds
-            {
-                refresh_table(users_url, table_id, users_empty_msg);
-                dipslaySuccess(data);
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                console.log(xhr.responseText);
-            }
-        });
     }
 
 
@@ -138,10 +119,10 @@ $(() => {
         var id = $(this).closest('tr').children().eq(0).text();
         var name = $(this).closest('tr').children().eq(1).text();
 
-        ajax("admin/user_suspend/" + id, null)
-                .then(() => {
-                    suspend_restore_msg(name,"suspended");
-                });
+        //Carry out asynchronous request to suspend user then refresh table and give feedback
+        ajax("admin/user_suspend/" + id, null).then(() => {
+            suspend_restore_msg(name, "suspended");
+        });
     });
 
 
@@ -150,29 +131,28 @@ $(() => {
         var id = $(this).closest('tr').children().eq(0).text();
         var name = $(this).closest('tr').children().eq(1).text();
 
-
-        ajax("admin/user_restore/" + id, null)
-                .then(() => {
-                    suspend_restore_msg(name,"pardoned from suspension");
-                });
+        //Carry out asynchronous request to restore suspended user then refresh table and give feedback
+        ajax("admin/user_restore/" + id, null).then(() => {
+            suspend_restore_msg(name, "pardoned from suspension");
+        });
     });
 
 
     /*******Action: Confirm hostel delete**********/
 
-    $(document).on("click", ".hostel_delete", function(){
+    $(document).on("click", ".hostel_delete", function () {
         let hostel = $(this).closest('tr').children().eq('0').text();
         return confirm_hostel_delete(hostel);
     });
 
-    function confirm_hostel_delete(hostel){ 
-       let bool = confirm("Delete "+ hostel+"?");
-        
+    function confirm_hostel_delete(hostel) {
+        let bool = confirm("Delete " + hostel + "?");
+
         return bool;
     }
 
     /**********Helper functions**********/
-    
+
     //To perform ajax functions
     function ajax(controller, data) {
         let promise = $.ajax({
@@ -192,10 +172,9 @@ $(() => {
     function suspend_restore_msg(name, action) {
         refresh_table(users_url, users_id, users_empty_msg);
         refresh_table(suspended_url, suspended_id, suspended_empty_msg);
-        alert(name + " "+ action);
-
+        alert(name + " " + action);
     }
-    
+
 
     //Initializes the datatables plugin
     function dataTable(table_id, empty_msg) {

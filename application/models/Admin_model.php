@@ -53,13 +53,13 @@ class Admin_Model extends CI_Model {
             $id = $row['user_id'];
             $name = $row['first_name'] . " " . $row['last_name'];
             $status = $row['user_status'];
-            
+
             /*
              * Assign last column a class based on the status of the block
              * 1 = restore suspended user
              * 0 = susupend registered user
              */
-            $last_col_class = ($blocked == 1)? "user-restore":"user-suspend";
+            $last_col_class = ($blocked == 1) ? "user-restore" : "user-suspend";
 
             //Display rows in which the value in the clocked column matches the blocked value passed as an argument 
             if ($row['blocked'] == $blocked) {
@@ -89,18 +89,22 @@ class Admin_Model extends CI_Model {
 
         $booked = $this->admin_model->userBooked($id);
         $user_status === "Tenant" ? $tenant = true : $tenant = false;
-        $data = ""; //What is to be echoed
+        $data = array(
+            "message" => null,
+            "status"=>false
+        ); //What is to be echoed
 
         if (!$booked && !$tenant) {
-            $data = $name . " has been permanently removed from the system";
+            $data['message'] = $name . " has been permanently removed from the system";
+            $data['status'] = true;
             $this->db->trans_start();
             $where = array('user_id' => $id);
             $this->table_model->deleteRow('users', $where);
             $this->db->trans_complete();
         } elseif ($booked) {
-            $data = $name . " had booked, therefore needs to remain in the system";
+            $data['message'] = $name . " had booked, therefore needs to remain in the system";
         } elseif ($tenant) {
-            $data = $name . " is a tenant, therefore needs to remain in the system";
+            $data['message'] = $name . " is a tenant, therefore needs to remain in the system";
         }
         echo json_encode($data);
     }
@@ -112,29 +116,30 @@ class Admin_Model extends CI_Model {
         }
         return false;
     }
-    
-    function userSuspend($id){
+
+    function userSuspend($id) {
         $update_data = array(
-            "blocked"=>1
+            "blocked" => 1
         );
-        
-        $this->db->where('user_id',$id);
-        $this->db->update('users',$update_data);
-    }
-    
-    function userRestore($id){
-        $update_data = array(
-            "blocked"=>0
-        );
-        
-        $this->db->where('user_id',$id);
-        $this->db->update('users',$update_data);       
+
+        $this->db->where('user_id', $id);
+        $this->db->update('users', $update_data);
     }
 
-    function hostelDelete($id){
+    function userRestore($id) {
+        $update_data = array(
+            "blocked" => 0
+        );
+
+        $this->db->where('user_id', $id);
+        $this->db->update('users', $update_data);
+    }
+
+    function hostelDelete($id) {
         $this->db->where('hostel_no', $id);
         $this->db->delete('hostels');
 
         redirect('admin/hostels');
     }
+
 }
