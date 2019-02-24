@@ -41,24 +41,25 @@ $(() => {
         if (confirmed) {
             //Carry out asynchronous request to delete data, then refresh table
             ajax("admin/user_delete", data).then(data => {
-                //Refresh table based on whether the user was removed or not then display feedback
+                //Convert JSON to JavaScript object
+                data = JSON.parse(data);
                 data.status ? refresh_table(users_url, table_id, users_empty_msg): null;
-                dipslaySuccess(data.message);
+                displaySuccess(data.message,"user_success");
             });
         }
     });
 
     function confirm_del(name) {
-        var del = confirm("Delete " + name + "?");
+        var del = confirm("Delete " + name + " ?");
 
         return del;
     }
 
-    function dipslaySuccess(msg) {
-        $('#users-success').html(msg);
-        $('#users-success').slideDown().delay(3000).slideUp();
+    function displaySuccess(msg,id_selector) {
+        $('#'+id_selector).html(msg);
+        $('#'+id_selector).slideDown().delay(3000).slideUp();
         setTimeout(function () {
-            $('#users-success').empty();
+            $('#'+id_selector).empty();
         }, 3000);
     }
 
@@ -108,6 +109,8 @@ $(() => {
             },
             error: function (xhr, textStatus, errorThrown) {
                 console.log(xhr.responseText);
+                console.log(textStatus);
+                console.log(errorThrown);
             }
         });
     }
@@ -139,7 +142,6 @@ $(() => {
 
 
     /*******Action: Confirm hostel delete**********/
-
     $(document).on("click", ".hostel_delete", function () {
         let hostel = $(this).closest('tr').children().eq('0').text();
         return confirm_hostel_delete(hostel);
@@ -158,10 +160,12 @@ $(() => {
         let promise = $.ajax({
             url: base_url + controller, // Url to which the request is send
             method: 'POST',
-            dataType: 'JSON',
             data: data,
+            success:function(){
+                
+            },
             error: function (xhr, textStatus, errorThrown) {
-                console.log(xhr.responseText);
+                console.log(errorThrown);
             }
         });
 
@@ -172,7 +176,7 @@ $(() => {
     function suspend_restore_msg(name, action) {
         refresh_table(users_url, users_id, users_empty_msg);
         refresh_table(suspended_url, suspended_id, suspended_empty_msg);
-        alert(name + " " + action);
+        displaySuccess(name + " " + action,"users-success");
     }
 
 

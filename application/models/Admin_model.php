@@ -60,6 +60,7 @@ class Admin_Model extends CI_Model {
              * 0 = susupend registered user
              */
             $last_col_class = ($blocked == 1) ? "user-restore" : "user-suspend";
+            $lock_icon = ($blocked == 1) ? "fa-lock-open":"fa-lock";
 
             //Display rows in which the value in the clocked column matches the blocked value passed as an argument 
             if ($row['blocked'] == $blocked) {
@@ -70,10 +71,10 @@ class Admin_Model extends CI_Model {
                 $data .= "<td>" . $row['user_type'] . "</td>";
                 $data .= "<td>" . $row['room_assigned'] . "</td>";
                 $data .= "<td>" . $row['user_status'] . "</td>";
-                $data .= '<td><button class="btn btn-danger delete_user"><i class="fa fa-trash-alt"></i></button></td>';
+                $data .= '<td><button class="btn btn-danger delete_user"><i class="far fa-trash-alt"></i></button></td>';
                 $data .= '<td>'
                         . '<button class="btn btn-warning ' . $last_col_class . '">'
-                        . '<i class="fas fa-lock-open"></i></td></button>';
+                        . '<i class="fas '.$lock_icon.'"></i></td></button>';
                 $data .= "</tr>";
             }
         }
