@@ -48,8 +48,8 @@ function user_verify() {
     $module_array = array('owner', 'admin', 'welcome');
 
     /***Session variables***/
-    $user_type = $CI->session->user_type;
-    $user_id = $CI->session->user_id;
+    $user_type = $CI->session->user_type ? $CI->session->user_type : null;
+    $user_id = $CI->session->user_id ? $CI->session->user_id : null;
 
     /* If the page is not one of the exempted ones (in page_array) or is the top level modules (in module array)
      * ensure the user is logged in

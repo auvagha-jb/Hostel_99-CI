@@ -10,7 +10,6 @@ class User_Ctrl extends CI_Controller{
             
     function sign_in_action(){
         $this->user_model->signIn();
-        
     }
     
     /******Sign up form functions*****/
