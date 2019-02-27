@@ -16,12 +16,12 @@ form.sign-in{
     border-color: darkgrey;
     padding: 4%;
     padding-bottom: 6%;
-    background: darkgray;
-    opacity: 0.85;    
+    background: black;
+    opacity: 0.8;    
 }
 
 form.sign-in label, .form-text{
-/*    color: white;*/
+    color: white;
 }
 
 form.sign-in input{

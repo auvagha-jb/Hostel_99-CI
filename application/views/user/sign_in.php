@@ -21,7 +21,7 @@
             
             <br>
             <small class="form-text">
-                Don't have an account?<a href='<?= base_url('main/sign-up');?>'>Sign up</a>
+                Don't have an account? <a href='<?= base_url('main/sign_up');?>'>Sign up</a>
             </small>
         </form>
         
