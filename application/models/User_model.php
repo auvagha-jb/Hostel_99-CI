@@ -29,13 +29,10 @@ class User_Model extends CI_Model{
             $first_name = $this->input->post('first_name');
             $last_name = $this->input->post('last_name');
             $email = $this->input->post('email');
-            /********************************/
             $pwd = $this->input->post('pwd');
             $pwd_hash = password_hash($pwd, PASSWORD_DEFAULT); 
-            /********************************/
             $country_code = $this->input->post('country_code');
             $no = $this->input->post('no');
-            /********************************/
             $gender = $this->input->post('gender');
             $user_type = $this->input->post('user_type');
 
@@ -130,7 +127,11 @@ class User_Model extends CI_Model{
                  'blocked'=>$row->blocked 
               );
               
-              //Check whether the parricular user had been blocked from the system
+              /**
+               * Determines which page to redirect the user, 
+               * Checks whether the particular user had been blocked from the system,
+               * Redirects user to the page they were on in the event they had to log in again when due to session expiry 
+               */
               $page = $this->redirect_user($data, $user_data); 
               echo $page;
               
@@ -148,15 +149,15 @@ class User_Model extends CI_Model{
       }
 }
 
-    //Called upon after a user successfully logs in or signs up
+    //Called once a user successfully logs in or signs up
     function redirect_user(&$data, &$user_data){
         $user_type = $data['user_type'];
         $blocked = $data['blocked'];
         $data = "";        
         
-        if($blocked == 0){
-            
-            //Redirect back to the page they were on
+        //If the user is not blocked...
+        if($blocked == 0){            
+            //If the user had logged in again after the session had expired 
             if(isset($_SESSION['current_url'])){
                 $current_url = $_SESSION['current_url'];
                 $module = $_SESSION['module'];
@@ -166,14 +167,13 @@ class User_Model extends CI_Model{
                 
                 //Ensures one is not redirected to a module above their access level
                 $clear = $this->rightType($module, $user_type);
-                if($clear){
-                    $data =  $current_url;
-                }else{
-                    $data = $this->default_redirect($user_type);
-                }
-                //$this->session->unset_userdata(array('current_url','module'));
                 
-            } else {
+                //If the user is of the right type, the url they last accessed will be return, else their index page will be returned, according to the user_type 
+                $data = $clear ? $current_url: $this->default_redirect($user_type);
+                
+            } 
+            //If they are logging in for the first time...
+            else {
                 //Set the session variables
                 $this->session->set_userdata($user_data);
                 //Redirect to index pages of the different user types
@@ -195,7 +195,7 @@ class User_Model extends CI_Model{
         
         if($module === "owner" && $user_type !=="Hostel Owner"){
             $valid = false;
-        }elseif($module === "admin" && $user_type !=="Admin"){
+        }else if($module === "admin" && $user_type !=="Admin"){
             $valid = false;
         }
         
@@ -204,7 +204,6 @@ class User_Model extends CI_Model{
     
     function default_redirect($user_type){
         $data = "";
-        
         switch ($user_type){
              case "Student":
                  $data = 'Main/';
@@ -215,6 +214,9 @@ class User_Model extends CI_Model{
              case "Admin":
                  $data = 'Admin/';
                  break;
+            default:
+                $data = 'Main/';
+                break;
          }
          return $data;
     }
@@ -223,5 +225,5 @@ class User_Model extends CI_Model{
     
     function logout(){
       session_destroy();
-     }
+    }
 }
