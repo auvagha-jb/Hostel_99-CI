@@ -30,7 +30,7 @@ class Admin extends CI_Controller{
         $data['users'] = $this->admin_model->getUsers();
         
         $this->load->view('templates/admin/admin-header',$data);
-        $this->load->view('admin/admin-users-test');
+        $this->load->view('admin/admin-users');
         $this->load->view('templates/admin/admin-footer');
     }
     
@@ -45,11 +45,22 @@ class Admin extends CI_Controller{
         $this->load->view('templates/admin/admin-footer');
     }
     
+    function owner_registration(){
+        //Title and css loaded
+        $data['header'] = $this->page_model->setTitle('Account registration');
+        $data['css'] = array('forms');
+        
+        $this->load->view('templates/admin/admin-header',$data);
+        $this->load->view('admin/owner-account-registration');
+        $this->load->view('templates/admin/admin-footer');
+    }
+   
     
-    /**********Start: Javascript helpers**********/
+    
+   /**********Start: Javascript helpers and form action**********/
    //Used in the various js files in the assets folder 
     
-    //Show the users table 
+    /**page: admin-users**/ 
     function show_users(){
         $this->admin_model->showUsers();
     }
@@ -70,10 +81,19 @@ class Admin extends CI_Controller{
         $this->admin_model->userRestore($id);
     }
     
+    /*****page: admin-hostels*****/
     function hostel_delete($id){
         $this->admin_model->hostelDelete($id);
     }
 
-
-    /**********End: Javascript helpers**********/
+    /*****page: owner-account-registration*****/
+    function register_owner(){
+        $this->admin_model->registerOwner();
+    }
+    
+    function show_registered_owners(){
+        $this->admin_model->showRegisteredOwners();
+    }
+    
+    /**********End: Javascript helpers and form helpers**********/
 }

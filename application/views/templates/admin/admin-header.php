@@ -29,19 +29,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             var base_url = "<?= base_url(); ?>";
         </script> 
 
-
         <?php
-        //To ensure the session is still running and that the user accesses the right module
+        //Helper method: To ensure the session is still running and that the user accesses the right module
         user_verify();
 
         //Custom Links
         if (isset($css)) {
+            //Helper method: To past custom css link(s)
             applyCSS($css);
         }
-
-        //Load admin model
-        $CI = &get_instance();
-        $CI->load->model('admin_model');
         ?>
     </head>
 
@@ -52,6 +48,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <a href="<?= base_url('admin/'); ?>" class="w3-bar-item w3-button w3-text-teal">Home</a>
                 <a href="<?= base_url('admin/users'); ?>" class="w3-bar-item w3-button">Users</a>
                 <a href="<?= base_url('admin/hostels'); ?>" class="w3-bar-item w3-button">Hostels</a>
+                <a href="<?= base_url('admin/owner_registration'); ?>" class="w3-bar-item w3-button">Register Owner</a>
                 <a href="<?= base_url('main/logout'); ?>" class="w3-bar-item w3-button w3-red"  id="logout-btn" style="float: right;">Logout</a>
             </nav>
         </div>

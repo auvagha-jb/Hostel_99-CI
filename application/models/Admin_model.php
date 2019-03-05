@@ -19,7 +19,7 @@ class Admin_Model extends CI_Model {
         return $query;
     }
 
-    /*     * *********Displaying the various tables********** */
+    /********Displaying the various tables**********/
 
     //For the registered users
     function showUsers() {
@@ -143,4 +143,34 @@ class Admin_Model extends CI_Model {
         redirect('admin/hostels');
     }
 
+    /*******Action: Register hostel owner******/
+    function registerOwner(){
+        $plain_pwd = $this->input->post('activation_pwd');
+        $pwd_hash = password_hash($plain_pwd, PASSWORD_BCRYPT);
+        
+        $data = array(
+            'activation_pwd'=> $pwd_hash,
+            'hostel_name'=> $this->input->post('hostel_name'),
+            'email'=> $this->input->post('email')
+        );
+        
+        $this->db->insert('owner_activation',$data);
+    }
+    
+    //Show registered owners
+    function showRegisteredOwners(){
+        $query = $this->db->get('owner_activation');
+        $data = "";
+        
+        foreach($query->result_array() as $row){
+            $data .= "<tr>";
+                $data .= "<td>" . $row['serial_no'] . "</td>";
+                $data .= "<td>" . $row['hostel_name'] . "</td>";
+                $data .= "<td>" . $row['email'] . "</td>";
+                $data .= '<td><button class="btn btn-danger delete_owner"><i class="far fa-trash-alt"></i></button></td>';
+                $data .= "</tr>";
+        }
+        
+        echo json_encode($data);
+    }
 }

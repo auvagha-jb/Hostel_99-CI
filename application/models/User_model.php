@@ -30,7 +30,7 @@ class User_Model extends CI_Model{
             $last_name = $this->input->post('last_name');
             $email = $this->input->post('email');
             $pwd = $this->input->post('pwd');
-            $pwd_hash = password_hash($pwd, PASSWORD_DEFAULT); 
+            $pwd_hash = password_hash($pwd, PASSWORD_BCRYPT); 
             $country_code = $this->input->post('country_code');
             $no = $this->input->post('no');
             $gender = $this->input->post('gender');
