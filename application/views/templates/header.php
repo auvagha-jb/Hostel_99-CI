@@ -119,8 +119,8 @@ function toggleNav()
                 <li class="dropdown">
                         <a class="btn btn-secondary dropdown-toggle dropdown-toggle" href="#">My Hostels</a>
                         <div class="dropdown-content">
+                            <a class="nav-link" href="' . base_url('owner/view_hostels') . '">View All</a>
                             <a class="nav-link" href="' . base_url('owner/add_hostel') . '">Add</a>
-                            <a class="nav-link" href="' . base_url('owner/view_hostels') . '">View</a>
                         </div>
                     </li>
                 <li class="dropdown">

@@ -95,5 +95,9 @@ class Admin extends CI_Controller{
         $this->admin_model->showRegisteredOwners();
     }
     
+    function hostel_registered(){
+        $this->admin_model->hostelRegistered($this->input->post('hostel_name'));
+    }
+    
     /**********End: Javascript helpers and form helpers**********/
 }

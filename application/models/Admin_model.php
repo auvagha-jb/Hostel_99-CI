@@ -81,8 +81,7 @@ class Admin_Model extends CI_Model {
         echo json_encode($data);
     }
 
-    /*     * *****Action: Delete user***** */
-
+    /*****Action: Delete user*****/
     function userDelete() {
         $id = $this->input->post('id');
         $name = $this->input->post('name');
@@ -148,13 +147,16 @@ class Admin_Model extends CI_Model {
         $plain_pwd = $this->input->post('activation_pwd');
         $pwd_hash = password_hash($plain_pwd, PASSWORD_BCRYPT);
         
-        $data = array(
+        $owner_data = array(
             'activation_pwd'=> $pwd_hash,
             'hostel_name'=> $this->input->post('hostel_name'),
             'email'=> $this->input->post('email')
         );
         
-        $this->db->insert('owner_activation',$data);
+        $data["status"] = ($this->db->insert('owner_activation',$owner_data));
+        $data["message"] = $data['status'] ? $owner_data["hostel_name"]." registered" : "Something went wrong, try again.";
+        
+        echo json_encode($data);
     }
     
     //Show registered owners
@@ -171,6 +173,17 @@ class Admin_Model extends CI_Model {
                 $data .= "</tr>";
         }
         
+        echo json_encode($data);
+    }
+    
+    function hostelRegistered($hostel_name){
+        $where = array('hostel_name'=> $hostel_name);
+        $hostel = $this->table_model->get_count_where('hostels',$where);
+        $owner_act = $this->table_model->get_count_where('owner_activation',$where);
+        
+        $data['exists'] = $hostel + $owner_act > 0;
+        $data['message'] = $data['exists'] ? "name-exists": null;
+                
         echo json_encode($data);
     }
 }

@@ -69,9 +69,9 @@ class Table_Model extends CI_Model{
         return $query->num_rows();
     }
     
-    function count_where($table, $cond){
-        $this->where($cond);
-        $this->countAll($table);
+    function get_count_where($table, $cond){
+        $query = $this->db->get_where($table, $cond);
+        return $query->num_rows();
     }
     
     function getNumRows($table,$cond){
