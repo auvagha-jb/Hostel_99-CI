@@ -44,9 +44,8 @@ class Student extends CI_Controller{
       );
       $where = array('user_id'=>$_SESSION['user_id']);  
   
-      $this->table_model->updateRows('users', $where,$update_data);
-        alert("Update succesful");
-        header("refresh:0; url=".base_url('student/view_details/'.$_SESSION['user_id']));
+      $response = $this->table_model->updateRows('users', $where,$update_data) ? "Update succesful": "Sorry, an error occured";
+        echo $response;
     }
     
     
@@ -60,6 +59,8 @@ class Student extends CI_Controller{
         
         if($num > 0){
             echo 'email-exists';
+        } else{
+            echo 'none found';
         }
     }
     

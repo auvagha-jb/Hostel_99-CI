@@ -1,0 +1,22 @@
+
+/***Validation: To ensure that there is not double registration of an email address**/
+    /*
+     * @returns {undefined}
+     */
+    function email_exists() {
+        let email = $('#email').val();
+
+        ajax("user_ctrl/email_exists",{ email }).then(data => {
+            //Convert JSON back to JS object 
+            data = JSON.parse(data);
+            valid.email = false;
+
+            if (data === "email-exists") {
+                $('#email').addClass('is-invalid');
+            } else {
+                valid.email = true;
+                $('#email').removeClass('is-invalid');
+            }
+            console.log(valid.email);
+        });
+    }

@@ -1,0 +1,24 @@
+
+GENERALLY: 
+Ensuring a user doesn't have access to another accouunt inadvertently
+
+
+OWNER MODULE
+assets/js->manage_tenants.js
+function removeTenant()
+
+
+DO I NEED THIS?
+$(document).on('click', '#book_now', function(event){
+       event.preventDefault();
+        var user_id = $('#user_id').val();
+        var href = $(this).attr('href');
+        
+        $.post('php/student-verify.php',{user_id:user_id},function(data){
+            if(data == ""){        
+                location.replace(href);
+            }else{
+                alert(data);
+            }
+        }); 
+    });

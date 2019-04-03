@@ -51,7 +51,7 @@
             <div class="lead m-auto pb-3">
                 Nothing to see here yet!
                 Add a hostel 
-                    <a href="'.base_url('owner/add-hostel').'">here</a>
+                    <a href="'.base_url('owner/add_hostel').'">here</a>
             </div>
             ';
         } 

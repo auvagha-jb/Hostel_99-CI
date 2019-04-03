@@ -23,6 +23,10 @@ class User_Ctrl extends CI_Controller{
         $this->user_model->signUp();
     }
     
-    /******************************/
+    function auth_owner(){
+        $email = $this->input->post('email');
+        $auth_pwd = $this->input->post('auth_pwd');
+        $this->user_model->authOwner($email, $auth_pwd);
+    }
     
 }

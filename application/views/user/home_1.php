@@ -1,5 +1,6 @@
 <!--Custom js-->
 <script src="<?= assets_url('js/main.js');?>"></script>
+<script src="<?= assets_url('js/src/hello.js');?>"></script>
 <!--Custom js-->
 
 <!--- Image Slider -->

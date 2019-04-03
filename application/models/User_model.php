@@ -14,10 +14,8 @@ class User_Model extends CI_Model{
     
     public function emailExists($email){
         $query = $this->db->get_where('users',array('email'=>$email));
-        $data = "";
-        if($query->num_rows()>0){
-            $data = "email-exists";
-        }
+        $data = ($query->num_rows()>0) ? "email-exists" : null;
+        
         echo json_encode($data);
     }
 
@@ -44,7 +42,8 @@ class User_Model extends CI_Model{
                 'country_code' =>$country_code,
                 'phone_no' =>$no, 
                 'gender' =>$gender, 
-                'user_type'=>$user_type
+                'user_type'=>$user_type,
+                'blocked'=>0
             );
 
             
@@ -61,31 +60,44 @@ class User_Model extends CI_Model{
                 
               //Get the page the user is to be directed to
               $page = $this->redirect_user($data, $user_data);
-              redirect($page);
+              echo $page;
             }
         }
 
     }
 
-    //To check whether the email address entered exists - To avoid duplicate email addresses
-    function availableEmail(){
-        //Check whether the email exists
-        if(isset($_POST['email'])){
-
-             $email = $_POST['email'];
-
-             $check_email = $con->prepare("SELECT * FROM users WHERE email = ?");
-             $check_email->bind_param("s", $email);
-             $check_email->execute();
-             $result1 = $check_email->get_result();
-
-             if(mysqli_num_rows($result1)>=1){
-                 echo'email-exists';
-             }else{
-                 echo 'all-good';
-             }
-        } 
+    
+    /**
+     * Ensures the owner's verification password is correct
+     * @param string $password
+     */
+    function authOwner($email, $auth_pwd){
+        //Get the email address
+        $query = $this->db->get_where('owner_activation', array('email'=>$email));
+        $row = $query->row_array();
+        $data = array();
+        
+        $data['status'] = false;
+        
+        //If such an email is found
+        if($query->num_rows() > 0){
+            $hash = $row['activation_pwd'];
+            
+            if(password_verify($auth_pwd, $hash)){
+                $data['msg'] = 'Verified';
+                $data['status'] = true;
+            }else {
+                $data['msg'] = 'Wrong authentication password';
+            }
+            
+        }else{
+            $data['msg'] = 'Your hostel was not verified by us. <a href="#">Contact us for assistance or visit our offices</a>';
+        }
+        
+        
+        echo json_encode($data);
     }
+    
     
     /***********End: Sign up form action*************/
     
@@ -100,7 +112,7 @@ class User_Model extends CI_Model{
       $sql = "SELECT * FROM users WHERE email = ?";
       $query = $this->db->query($sql, $email);
 
-      //If we get a reult
+      //If the email exists
       if($query->num_rows()==1){
 
           $row = $query->row();

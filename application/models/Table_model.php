@@ -55,7 +55,7 @@ class Table_Model extends CI_Model{
 
     function updateRows($table, $where,$update){
         $this->db->where($where);
-        $this->db->update($table,$update);
+        return $this->db->update($table,$update);
     }
      
     

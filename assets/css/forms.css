@@ -1,3 +1,4 @@
+/****Sign in form***/
 body.sign-in{
     background-image: url('../img/students-reading.jpeg');
     background-size: cover;
@@ -28,7 +29,7 @@ form.sign-in input{
     width: 300px;
 }
 
-
+/*****Sign up/update form****/
 form.sign-up, form.update{
     border-color: #000000;
     position: absolute;

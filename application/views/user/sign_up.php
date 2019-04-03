@@ -1,3 +1,5 @@
+<script src="<?= assets_url('js/forms.js');?>"></script>
+
 <div class="container-fluid">
     <!--Form-->
     <div class="row">
@@ -76,6 +78,12 @@
                          </select>
                      </div>
                      
+                     <div class="form-group owner_auth d-none">
+                         <input type="password" class="form-control"  id="auth_pwd" placeholder="Enter your authentication code">
+                         <div class="invalid-feedback" id="owner_invalid"></div>
+                         <div class="valid-feedback" id="owner_valid"></div>
+                     </div>
+                     
                      <button type="submit" name="s-u-submit" id="s-u-submit" class="btn btn-primary">Join H99</button>
                 </form>
             </div>
@@ -83,7 +91,7 @@
     </div>
     </div>
 
-<script src="<?= assets_url('js/forms.js');?>"></script>
+
 
 
 
