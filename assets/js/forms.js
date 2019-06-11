@@ -5,10 +5,10 @@ $(document).ready(function () {
     function getDefaults() {
         //Prevent resubmission on refresh or back
         if (window.history.replaceState) {
-            window.history.replaceState(null, null, window.location.href);
+            window.history.replaceState(null,null,window.location.href);
         }
         //turn off auto-complete
-        $("#add-hostel-form input").attr("autocomplete", "off");
+        $("#add-hostel-form input").attr("autocomplete","off");
 
         //Default value for the country code list 
         $("#country_code").val(254);
@@ -39,7 +39,7 @@ $(document).ready(function () {
     $(".sign-up #confirm_pwd").keyup(function () {
         var pwd = $("#pwd").val();
         var confirm_pwd = $("#confirm_pwd").val();
-        pwdMatch(pwd, confirm_pwd);
+        pwdMatch(pwd,confirm_pwd);
     });
 
     //On change of owner_authentication password
@@ -50,7 +50,7 @@ $(document).ready(function () {
     //On change of user_type
     $("#user_type").change(function () {
         let user_type = $(this).val(),
-                div = $(".owner_auth");
+            div = $(".owner_auth");
 
         //Check whether the user is signing up for an owner or student account
         owner_auth.is_owner = (user_type === "Hostel Owner") ? true : false;
@@ -70,9 +70,9 @@ $(document).ready(function () {
         validEmail();
 
         let form = $(this),
-                url = form.attr('action'),
-                type = form.attr('method'),
-                data = get_form_data(form);
+            url = form.attr('action'),
+            type = form.attr('method'),
+            data = get_form_data(form);
 
         //Ensures that the passwords match and are long enough and the email address does not exist in DB
         if (!user_auth.pwd || !user_auth.email) {
@@ -83,9 +83,9 @@ $(document).ready(function () {
             console.log("Hostel verification failed");
         } else {
             console.log("Submitted");
-            ajax_form_submit(url, type, data).then(data =>{
+            ajax_form_submit(url,type,data).then(data => {
                 let verified = is_verified(data);
-                
+
                 if (verified) {
                     redirect(data);
                 }
@@ -121,7 +121,7 @@ $(document).ready(function () {
     function validEmail() {
         var email = $("#email").val();
 
-        $.post(base_url + "user_ctrl/email_exists", {email: email}, function (data) {
+        $.post(base_url + "user_ctrl/email_exists",{ email: email },function (data) {
             console.log(data);
             if (data === "email-exists") {
                 $("#email").addClass("is-invalid");
@@ -131,8 +131,8 @@ $(document).ready(function () {
                 user_auth.email = true;
             }
             console.log(user_auth);
-        }, "json").fail((xhr, textStatus, errorThrown) => {
-            console.log(xhr, textStatus, errorThrown);
+        },"json").fail((xhr,textStatus,errorThrown) => {
+            console.log(xhr,textStatus,errorThrown);
         });
     }
 
@@ -165,12 +165,12 @@ $(document).ready(function () {
             url: base_url + "user_ctrl/auth_owner",
             method: 'POST',
             dataType: 'JSON',
-            data: {email, auth_pwd},
+            data: { email,auth_pwd },
             success: function (data) {
 
             },
-            error: function (xhr, textStatus, errorThrown) {
-                console.log(xhr.responseText, textStatus, errorThrown);
+            error: function (xhr,textStatus,errorThrown) {
+                console.log(xhr.responseText,textStatus,errorThrown);
             }
         });
 
@@ -207,13 +207,13 @@ $(document).ready(function () {
 
     $(".update").submit(function (event) {
         let form = $(this),
-                url = form.attr('action'),
-                type = form.attr('method'),
-                data = get_form_data(form);
+            url = form.attr('action'),
+            type = form.attr('method'),
+            data = get_form_data(form);
 
         //Ensures the user's email is ok before submission
         if (update_form_auth.email) {
-            ajax_form_submit(url, type, data).then(data =>{
+            ajax_form_submit(url,type,data).then(data => {
                 alert(data);
             });
         }
@@ -221,13 +221,16 @@ $(document).ready(function () {
         return false;
     });
 
+    /**
+     * Gets the data for each from element with attribute 'name'
+     * @param {*} form 
+     */
     function get_form_data(form) {
         let data = {};
 
         //Get elements with a _name_ attribute
         form.find('[name]').each(function () {
-            let input = $(this), name = input.attr('name'), value = input.val();
-
+            let input = $(this),name = input.attr('name'),value = input.val();
             //Insert the form data into the object
             data[name] = value;
         });
@@ -235,22 +238,22 @@ $(document).ready(function () {
         return data;
     }
 
-    /*
+    /** 
      * Submits the form using ajax
      * @param {string} url
      * @param {string} type
      * @param {string} data
      * @returns {undefined}
      */
-    function ajax_form_submit(url, type, data) {
+    function ajax_form_submit(url,type,data) {
         return $.ajax({
             url: url,
             type: type,
             data: data,
             success: function (data) {
-                
+
             },
-            error: function (xhr, textStatus, errorThrown) {
+            error: function (xhr,textStatus,errorThrown) {
                 console.log(xhr.responseText);
             }
         });
@@ -263,7 +266,7 @@ $(document).ready(function () {
             user_id: document.getElementById('user_id').value
         };
 
-        $.post(base_url + "student/email_available", form_data, function (data) {
+        $.post(base_url + "student/email_available",form_data,function (data) {
             console.log(data);
             if (data === "email-exists") {
                 $("#email").addClass("is-invalid");
@@ -272,7 +275,7 @@ $(document).ready(function () {
                 $("#email").removeClass("is-invalid");
                 update_form_auth.email = true;
             }
-        }).fail(function (xhr, textStatus, errorThrown) {
+        }).fail(function (xhr,textStatus,errorThrown) {
             console.log(xhr.responseText);
         });
         console.log("Email: " + user_auth.email);
@@ -290,7 +293,7 @@ $(document).ready(function () {
             return false;
         }
         //Ensure the passwords match
-        if (!pwdMatch(pwd, confirm_pwd)) {
+        if (!pwdMatch(pwd,confirm_pwd)) {
             return false;
         }
 
@@ -309,7 +312,7 @@ $(document).ready(function () {
     }
 
     //Ensures the password matches the confirm_password field
-    function pwdMatch(pwd, confirm_pwd) {
+    function pwdMatch(pwd,confirm_pwd) {
         var valid = true;
         var msg = "Ensure the passwords match";
         if (pwd !== confirm_pwd) {
@@ -333,16 +336,16 @@ $(document).ready(function () {
         $.ajax({
             url: base_url + "user_ctrl/sign_in_action",
             method: 'POST',
-            data: {email: email, pwd: pwd},
+            data: { email: email,pwd: pwd },
             cache: true,
             beforeSend: function () {
                 $('#sign-in-btn').html('Verifying...');
             },
             success: function (data) {
                 let verified = is_verified(data);
-                verifiedAction(verified, data);
+                verifiedAction(verified,data);
             },
-            error: function (xhr, textStatus, errorThrown) {
+            error: function (xhr,textStatus,errorThrown) {
                 console.log(xhr.responseText);
             }
         });
@@ -373,7 +376,7 @@ $(document).ready(function () {
     }
 
     //Action to take once the credentials have been authenticated
-    function verifiedAction(verified, data) {
+    function verifiedAction(verified,data) {
         let btn = $('#sign-in-btn');
         console.log(verified);
 

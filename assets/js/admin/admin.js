@@ -189,17 +189,17 @@ $(() => {
             .slice(-8);     //Cut off last 8 characters
         $('#activation_pwd').val(pwd);
     }
-    
 
-    /***Validation: To ensure that there are no duplicate hostel names**/
-    /*
+
+    /**
+     * Validation: To ensure that there are no duplicate hostel names 
      * @returns {undefined}
      */
     function hostel_registered() {
         let hostel_name = $('#hostel_name').val();
         let hostel = $('#hostel_name');
 
-        ajax("admin/hostel_registered",{hostel_name}).then(data => {
+        ajax("admin/hostel_registered",{ hostel_name }).then(data => {
             data = JSON.parse(data);
             console.log(data);
             if (data.message === "name-exists") {
@@ -216,8 +216,8 @@ $(() => {
     });
 
 
-    /***Validation: To ensure that a random password has been generated***/
-    /*
+    /** 
+     * Validation: To ensure that a random password has been generated
      * @returns {undefined}
      */
     function password_generated() {
@@ -225,8 +225,8 @@ $(() => {
         !valid.password ? pwd.addClass('is-invalid') : pwd.removeClass('is-invalid');
     }
 
-    /***Action: Submit owner registration form***/
-    /*
+
+    /**Action: Submit owner registration form
      * @param {string} action
      * @returns {undefined}
      */
@@ -244,17 +244,17 @@ $(() => {
             displayAlert(data.message,'owner-reg-feedback','success');
             clearForm("owner_reg_form");
             resetState(valid);
-            refresh_table(owners_url, owners_id, owners_empty_msg);
+            refresh_table(owners_url,owners_id,owners_empty_msg);
         });
     }
 
-    /***Resets the validation object props to false***/
-    /*
+    /**
+     * Resets the validation object props to false
      * @param {type} object
      * @returns {undefined}
      */
-    function resetState(object){
-        for (let prop in object){
+    function resetState(object) {
+        for (let prop in object) {
             object[prop] = false;
         }
     }
@@ -262,7 +262,7 @@ $(() => {
     $('#owner_reg_form').submit(e => {
         e.preventDefault();
         let action = 'admin/register_owner';
-        
+
         //Ensure a random password has been generated
         password_generated();
 
@@ -289,8 +289,9 @@ $(() => {
 
     /**********Helper functions**********/
 
-    /***Displays notification that slides down from the top of the page***/
-    /*
+
+    /**
+     * Displays notification that slides down from the top of the page
      * @param {string} msg
      * @param {string} id_selector
      * @returns {undefined}
@@ -307,8 +308,8 @@ $(() => {
     }
 
 
-    /****To send asunchrounous HTTP requests***/
     /**
+     * To send asynchronous HTTP requests
      * @param {string} controller
      * @param {string} data
      * @returns {jqXHR}
@@ -318,8 +319,8 @@ $(() => {
             url: base_url + controller, // Url to which the request is send
             method: 'POST',
             data: data,
-            success:{
-                
+            success: {
+
             },
             error: function (xhr,textStatus,errorThrown) {
                 console.error(xhr.responseText);
@@ -329,18 +330,18 @@ $(() => {
         return promise;
     }
 
-    /***Clears the form data once the form is submitted***/
-    /*
+    /**
+     * Clears the form data once the form is submitted
      * @param {type} id_selector
      * @returns {undefined}
      */
-    function clearForm(id_selector){
-        let fields = ["input[type = text]","input[type = email]", "input[type = password]"];
-        for (let input_field of fields){
-            $('#'+id_selector+" "+input_field).val("");
-        } 
+    function clearForm(id_selector) {
+        let fields = ["input[type = text]","input[type = email]","input[type = password]"];
+        for (let input_field of fields) {
+            $('#' + id_selector + " " + input_field).val("");
+        }
     }
-    
+
     //Feedback once a user is suspended or unsuspended
     function suspend_restore_msg(name,action) {
         refresh_table(users_url,users_id,users_empty_msg);
@@ -349,7 +350,11 @@ $(() => {
     }
 
 
-    //Initializes the datatables plugin
+    /**
+     * Initializes the datatables plugin
+     * @param {string} table_id 
+     * @param {string} empty_msg 
+     */
     function dataTable(table_id,empty_msg) {
         $('#' + table_id).DataTable({
             "language": {
@@ -358,7 +363,11 @@ $(() => {
         });
     }
 
-    //Ajax helper function: Appends table to tbody of specified table
+    /**
+     * Ajax helper function: Appends table to tbody of specified table
+     * @param {string} data 
+     * @param {string} table_id 
+     */
     function appendTable(data,table_id) {
         if (data !== null) {
             $("#" + table_id + " tbody").html(data);
